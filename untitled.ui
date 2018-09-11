@@ -1,0 +1,1391 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>2100</width>
+    <height>2970</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QWidget" name="gridLayoutWidget">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>30</y>
+      <width>1190</width>
+      <height>1074</height>
+     </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>40</width>
+      <height>30</height>
+     </size>
+    </property>
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="18" column="10">
+      <widget class="QLabel" name="label_42">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>TextLabel</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="5">
+      <widget class="QLabel" name="label_3">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>性别</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="10" colspan="2">
+      <widget class="QLineEdit" name="lineEdit_13">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="6">
+      <widget class="QLineEdit" name="lineEdit_5">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="9">
+      <widget class="QLabel" name="label_21">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>家属地址或工作单位</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="5">
+      <widget class="QLabel" name="label_20">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>联系电话</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="11">
+      <widget class="QLineEdit" name="lineEdit_4">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="5">
+      <widget class="QLabel" name="label_7">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>证件号码</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="5">
+      <widget class="QLabel" name="label_14">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>死亡地点</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="10">
+      <widget class="QLabel" name="label_5">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>国家或地区</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="9" colspan="2">
+      <widget class="QLabel" name="label_15">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>死亡时是否处于妊娠期或妊娠终止后42天内</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="18" column="5">
+      <widget class="QLabel" name="label_40">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>TextLabel</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="6">
+      <widget class="QComboBox" name="comboBox_3">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="9">
+      <widget class="QLabel" name="label_18">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>常住地址</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="5">
+      <widget class="QLabel" name="label_11">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>文化程度</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="16" column="1" colspan="11">
+      <widget class="QLabel" name="label_39">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>17</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>死亡调查记录</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+       <property name="margin">
+        <number>0</number>
+       </property>
+      </widget>
+     </item>
+     <item row="18" column="1" colspan="2">
+      <widget class="QLabel" name="label_38">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>TextLabel</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="5">
+      <widget class="QLabel" name="label_17">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>户籍地址</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="14" column="3">
+      <widget class="QLineEdit" name="lineEdit_25">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="14" column="9">
+      <widget class="QLabel" name="label_35">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>填卡日期</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="18" column="6">
+      <widget class="QLineEdit" name="lineEdit_29">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="15" column="1" colspan="3">
+      <widget class="QLabel" name="label_36">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>（以下由编码人员填写）根本死亡原因</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="14" column="10" colspan="2">
+      <widget class="QDateEdit" name="dateEdit_2">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="10" colspan="2">
+      <widget class="QLineEdit" name="lineEdit_10">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="15" column="9">
+      <widget class="QLabel" name="label_37">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>ICD编码</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="9">
+      <widget class="QLineEdit" name="lineEdit_6">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="11">
+      <widget class="QComboBox" name="comboBox_2">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="10">
+      <widget class="QLabel" name="label_9">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>婚姻状况</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="13" column="10" colspan="2">
+      <widget class="QComboBox" name="comboBox_13">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="12" column="1" colspan="4">
+      <widget class="QLabel" name="label_29">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>Ⅱ.其他疾病诊断（促进死亡，但与导致死亡无关的其他重要情况）</string>
+       </property>
+       <property name="textFormat">
+        <enum>Qt::PlainText</enum>
+       </property>
+       <property name="scaledContents">
+        <bool>false</bool>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="9" column="1" colspan="4">
+      <widget class="QLabel" name="label_27">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>    (b) 引起(a）的疾病或情况</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="20" column="1" colspan="11">
+      <widget class="QLabel" name="label_2">
+       <property name="text">
+        <string>注：①此表填写范围为在家、养老服务机构、其他场所正常死亡者；②被调查者应为死者近亲或知情人；③调查时应出具以下资料：被调查者有效身份证件，居住地居委会或村委会证明，死者身份证和/或户口簿、生前病史卡.</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="18" column="3" colspan="2">
+      <widget class="QLineEdit" name="lineEdit_28">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="11" column="11">
+      <widget class="QComboBox" name="comboBox_10">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="17" column="1" colspan="11">
+      <widget class="QTextEdit" name="textEdit">
+       <property name="minimumSize">
+        <size>
+         <width>100</width>
+         <height>370</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="11" column="5" colspan="5">
+      <widget class="QLineEdit" name="lineEdit_20">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="15" column="10" colspan="2">
+      <widget class="QLineEdit" name="lineEdit_27">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="10" column="5" colspan="5">
+      <widget class="QLineEdit" name="lineEdit_16">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="9" column="5" colspan="5">
+      <widget class="QLineEdit" name="lineEdit_15">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="12" column="11">
+      <widget class="QComboBox" name="comboBox_11">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="13" column="1" colspan="3">
+      <widget class="QLabel" name="label_31">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>生前主要疾病最好诊断单位</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="11" column="10">
+      <widget class="QLineEdit" name="lineEdit_22">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="6">
+      <widget class="QComboBox" name="comboBox_14">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="8" column="10">
+      <widget class="QLineEdit" name="lineEdit_17">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="9">
+      <widget class="QComboBox" name="comboBox_15">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="18" column="7">
+      <widget class="QLabel" name="label_41">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>TextLabel</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="11">
+      <widget class="QComboBox" name="comboBox_5">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="9" colspan="3">
+      <widget class="QLineEdit" name="lineEdit_7">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="8" column="11">
+      <widget class="QComboBox" name="comboBox_6">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="12" column="5" colspan="5">
+      <widget class="QLineEdit" name="lineEdit_23">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="12" column="10">
+      <widget class="QLineEdit" name="lineEdit_24">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="13" column="9">
+      <widget class="QLabel" name="label_32">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>生前主要 疾病最高诊断标准</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="9" column="11">
+      <widget class="QComboBox" name="comboBox_7">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="9" column="10">
+      <widget class="QLineEdit" name="lineEdit_18">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="10" column="10">
+      <widget class="QLineEdit" name="lineEdit_19">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="10" column="11">
+      <widget class="QComboBox" name="comboBox_8">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="10" colspan="2">
+      <widget class="QLabel" name="label_24">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>发病至死亡大概时间</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="5" colspan="5">
+      <widget class="QLabel" name="label_23">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>疾病名称（勿填症状体征）</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="8" column="5" colspan="5">
+      <widget class="QLineEdit" name="lineEdit_14">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="6" colspan="3">
+      <widget class="QComboBox" name="comboBox_4">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1" colspan="2">
+      <widget class="QLabel" name="label_10">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>出生日期</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="7" colspan="2">
+      <widget class="QLabel" name="label_4">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>民族</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1" colspan="2">
+      <widget class="QLabel" name="label_6">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>有效身份证件类别</string>
+       </property>
+       <property name="textFormat">
+        <enum>Qt::PlainText</enum>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="19" column="11">
+      <widget class="QDateEdit" name="dateEdit_3">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="1" colspan="2">
+      <widget class="QLabel" name="label_16">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>生前工作单位</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="6" colspan="3">
+      <widget class="QLineEdit" name="lineEdit_9">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="1" colspan="2">
+      <widget class="QLabel" name="label_13">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>死亡日期</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="3" colspan="2">
+      <widget class="QLineEdit" name="lineEdit_2">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="13" column="4" colspan="5">
+      <widget class="QComboBox" name="comboBox_12">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="6" colspan="3">
+      <widget class="QLineEdit" name="lineEdit_12">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="3" colspan="2">
+      <widget class="QDateTimeEdit" name="dateTimeEdit">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="1" colspan="4">
+      <widget class="QLabel" name="label_26">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>致死的主要疾病诊断</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="14" column="4" colspan="5">
+      <widget class="QLabel" name="label_34">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>医疗卫生机构盖章</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="18" column="8" colspan="2">
+      <widget class="QLineEdit" name="lineEdit_30">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="14" column="1" colspan="2">
+      <widget class="QLabel" name="label_33">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>医师签名</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="3" colspan="2">
+      <widget class="QComboBox" name="comboBox">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="15" column="4" colspan="5">
+      <widget class="QLineEdit" name="lineEdit_26">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="3" colspan="2">
+      <widget class="QDateEdit" name="dateEdit">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="3" colspan="2">
+      <widget class="QLineEdit" name="lineEdit_11">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="3" colspan="2">
+      <widget class="QLineEdit" name="lineEdit_8">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1" colspan="2">
+      <widget class="QLabel" name="textlabel">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>死者姓名</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="18" column="11">
+      <widget class="QLineEdit" name="lineEdit_31">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="7" colspan="2">
+      <widget class="QLabel" name="label_12">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>个人身份</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="1" colspan="2">
+      <widget class="QLabel" name="label_19">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>可联系的家属姓名</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="10" column="1" colspan="4">
+      <widget class="QLabel" name="label_28">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>    (c) 引起(b)的疾病或情况</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="7" colspan="2">
+      <widget class="QLabel" name="label_8">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>年龄</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="11" column="1" colspan="4">
+      <widget class="QLabel" name="label_30">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>    (d) 引起(c)的疾病或情况</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="19" column="1" colspan="2">
+      <widget class="QLabel" name="label_43">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>TextLabel</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="19" column="3" colspan="4">
+      <widget class="QLineEdit" name="lineEdit_32">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="19" column="10">
+      <widget class="QLabel" name="label_45">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>TextLabel</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="19" column="8" colspan="2">
+      <widget class="QLineEdit" name="lineEdit_33">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="19" column="7">
+      <widget class="QLabel" name="label_44">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>TextLabel</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="8" column="1" colspan="4">
+      <widget class="QLabel" name="label_25">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>Ⅰ.（a）直接死亡原因</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
+    <zorder>dateEdit_3</zorder>
+    <zorder>textlabel</zorder>
+    <zorder>label_3</zorder>
+    <zorder>label_4</zorder>
+    <zorder>label_5</zorder>
+    <zorder>lineEdit_4</zorder>
+    <zorder>label_6</zorder>
+    <zorder>comboBox</zorder>
+    <zorder>lineEdit_2</zorder>
+    <zorder>lineEdit_5</zorder>
+    <zorder>label_7</zorder>
+    <zorder>label_8</zorder>
+    <zorder>label_9</zorder>
+    <zorder>lineEdit_6</zorder>
+    <zorder>comboBox_2</zorder>
+    <zorder>label_10</zorder>
+    <zorder>dateEdit</zorder>
+    <zorder>label_11</zorder>
+    <zorder>comboBox_3</zorder>
+    <zorder>label_12</zorder>
+    <zorder>lineEdit_7</zorder>
+    <zorder>label_13</zorder>
+    <zorder>dateTimeEdit</zorder>
+    <zorder>label_14</zorder>
+    <zorder>comboBox_4</zorder>
+    <zorder>label_15</zorder>
+    <zorder>comboBox_5</zorder>
+    <zorder>label_16</zorder>
+    <zorder>lineEdit_8</zorder>
+    <zorder>label_17</zorder>
+    <zorder>lineEdit_9</zorder>
+    <zorder>label_18</zorder>
+    <zorder>lineEdit_10</zorder>
+    <zorder>label_19</zorder>
+    <zorder>lineEdit_11</zorder>
+    <zorder>label_20</zorder>
+    <zorder>lineEdit_12</zorder>
+    <zorder>label_21</zorder>
+    <zorder>lineEdit_13</zorder>
+    <zorder>label_26</zorder>
+    <zorder>label_23</zorder>
+    <zorder>label_24</zorder>
+    <zorder>lineEdit_14</zorder>
+    <zorder>label_27</zorder>
+    <zorder>label_28</zorder>
+    <zorder>lineEdit_15</zorder>
+    <zorder>lineEdit_16</zorder>
+    <zorder>lineEdit_17</zorder>
+    <zorder>comboBox_6</zorder>
+    <zorder>lineEdit_18</zorder>
+    <zorder>comboBox_7</zorder>
+    <zorder>lineEdit_19</zorder>
+    <zorder>comboBox_8</zorder>
+    <zorder>label_30</zorder>
+    <zorder>lineEdit_20</zorder>
+    <zorder>lineEdit_22</zorder>
+    <zorder>comboBox_10</zorder>
+    <zorder>label_29</zorder>
+    <zorder>lineEdit_23</zorder>
+    <zorder>lineEdit_24</zorder>
+    <zorder>comboBox_11</zorder>
+    <zorder>label_31</zorder>
+    <zorder>comboBox_12</zorder>
+    <zorder>label_32</zorder>
+    <zorder>comboBox_13</zorder>
+    <zorder>label_33</zorder>
+    <zorder>lineEdit_25</zorder>
+    <zorder>label_34</zorder>
+    <zorder>label_35</zorder>
+    <zorder>dateEdit_2</zorder>
+    <zorder>label_36</zorder>
+    <zorder>lineEdit_26</zorder>
+    <zorder>label_37</zorder>
+    <zorder>lineEdit_27</zorder>
+    <zorder>label_38</zorder>
+    <zorder>textEdit</zorder>
+    <zorder>label_39</zorder>
+    <zorder>lineEdit_28</zorder>
+    <zorder>label_40</zorder>
+    <zorder>lineEdit_29</zorder>
+    <zorder>label_41</zorder>
+    <zorder>lineEdit_30</zorder>
+    <zorder>label_42</zorder>
+    <zorder>lineEdit_31</zorder>
+    <zorder>label_43</zorder>
+    <zorder>lineEdit_32</zorder>
+    <zorder>label_44</zorder>
+    <zorder>lineEdit_33</zorder>
+    <zorder>label_45</zorder>
+    <zorder>comboBox_14</zorder>
+    <zorder>comboBox_15</zorder>
+    <zorder>label_2</zorder>
+    <zorder>label_25</zorder>
+   </widget>
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>450</x>
+      <y>-10</y>
+      <width>96</width>
+      <height>60</height>
+     </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>0</width>
+      <height>30</height>
+     </size>
+    </property>
+    <property name="font">
+     <font>
+      <family>Adobe 黑体 Std R</family>
+      <pointsize>36</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>登记</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+    <property name="wordWrap">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <zorder>gridLayoutWidget</zorder>
+   <zorder>comboBox_5</zorder>
+   <zorder>label_38</zorder>
+   <zorder>label</zorder>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>2100</width>
+     <height>23</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
