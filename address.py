@@ -12,7 +12,7 @@ class Address(QWidget):
 
     def __init__(self):
         super(Address,self).__init__()
-        self.setFixedSize(400,160)
+        self.setFixedSize(500,200)
         self.province_list = a.province_dic
         self.city_list = a.city_dic
         self.county_list = a.county_dic
@@ -20,13 +20,13 @@ class Address(QWidget):
         self.set_ui()
 
     def set_ui(self):
-        self.province_label = QLabel("province")
+        self.province_label = QLabel("省")
         self.province = QComboBox()
-        self.city_label = QLabel("city")
+        self.city_label = QLabel("市")
         self.city = QComboBox()
-        self.county_label = QLabel("county")
+        self.county_label = QLabel("县")
         self.county = QComboBox()
-        self.town_label = QLabel("town")
+        self.town_label = QLabel("乡")
         self.town = QComboBox()
         self.id_label = QLabel('id')
         self.id = QLineEdit()
@@ -42,19 +42,26 @@ class Address(QWidget):
             self.province.addItem(j,QVariant(i))
 
         self.layout = QGridLayout()
+        # self.layout.setRowStretch(0,1)
+        # self.layout.setRowStretch(1,1)
+        # self.layout.setRowStretch(2,1)
+        # self.layout.setRowStretch(3,1)
+
+
+
         self.toplayout = QVBoxLayout()
         self.layout.addWidget(self.province_label,0,0)
-        self.layout.addWidget(self.province,0,1)
-        self.layout.addWidget(self.city_label,0,2)
-        self.layout.addWidget(self.city,0,3)
+        self.layout.addWidget(self.province,0,1,1,2)
+        self.layout.addWidget(self.city_label,0,3)
+        self.layout.addWidget(self.city,0,4,1,2)
         self.layout.addWidget(self.county_label,1,0)
-        self.layout.addWidget(self.county,1,1)
-        self.layout.addWidget(self.town_label,1,2)
-        self.layout.addWidget(self.town,1,3)
-        self.layout.addWidget(self.id_label,2,0)
-        self.layout.addWidget(self.id,2,1,1,3)
-        self.layout.addWidget(self.location_label,3,0)
-        self.layout.addWidget(self.location,3,1,1,3)
+        self.layout.addWidget(self.county,1,1,1,2)
+        self.layout.addWidget(self.town_label,1,3)
+        self.layout.addWidget(self.town,1,4,1,2)
+        self.layout.addWidget(self.location_label,2,0,1,2)
+        self.layout.addWidget(self.location,2,2,1,4)
+        self.layout.addWidget(self.id_label,3,0,1,2)
+        self.layout.addWidget(self.id,3,2,1,4)
 
         self.a = QWidget()
         self.a.setLayout(self.layout)
