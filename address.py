@@ -32,7 +32,6 @@ class Address(QWidget):
         self.id = QLineEdit()
         self.location_label = QLabel("address")
         self.location = QLineEdit()
-        # self.location.setClearButtonEnabled(True)
         self.province.currentTextChanged.connect(self.choose_city)
         self.city.currentTextChanged.connect(self.choose_county)
         self.county.currentTextChanged.connect(self.choose_town)
