@@ -6,14 +6,14 @@ from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtWebEngineWidgets import *
 from PyQt5 import QtWidgets
-import sys
 from address import *
 from calendar import *
 
 class Regist(QWidget):
 
-    def __init__(self):
+    def __init__(self, user):
         super(Regist,self).__init__()
+        self.user = user
         self.setWindowTitle("登记")
         self.resize(600, 400)
         self.move(50, 50)
@@ -526,12 +526,3 @@ class Regist(QWidget):
 
     def input_researchday(self, date):
         self.research_date.setDate(date)
-
-
-
-
-if __name__ == "__main__":
-        app = QApplication(sys.argv)
-        mainwindow = Regist()
-        mainwindow.show()
-        sys.exit(app.exec_())
