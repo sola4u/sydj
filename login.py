@@ -12,7 +12,6 @@ from regist import *
 
 
 class Login(QWidget):
-    user_signal = pyqtSignal(str)
 
     def __init__(self):
         super(Login,self).__init__()
@@ -44,33 +43,35 @@ class Login(QWidget):
         self.setLayout(self.layout)
 
     def signin(self):
-        db = DataBase()
+        self.db = DataBase()
         username = self.username.text()
         password = self.password.text()
         if (username == '' or password == ''):
             QMessageBox.warning(self,'提示','用户名或密码为空', QMessageBox.Yes, QMessageBox.Yes)
             return
-        db.cur.execute('select * from user where name = %s'%username)
-        rslt = db.cur.fetchone()
+        sql = 'select * from user where id = "%s"'%username
+        self.db.cur.execute(sql)
+        rslt = self.db.cur.fetchone()
         md5 = hashlib.md5()
-        password_md5 = md5.update(password.encode(encoding='utf-8')).hexdigest()
+        # password_md5 = md5.update(password.encode(encoding='utf-8')).hexdigest()
+        password_md5 = password
         if not rslt:
             QMessageBox.information(self,'提示','帐号不存在',QMessageBox.Yes, QMessageBox.Yes)
         else:
             if password_md5 == rslt[2]:
+                self.db.con.close()
                 mainwindow.close()
-                listwindow = ListWindow(username)
-                listwindow.show()
-                self.user_signal.emit(username)
+                self.listwindow = ListWindow(username)
+                self.listwindow.show()
             else:
                 QMessageBox.information(self,'提示','用户名密码错误',QMessageBox.Yes, QMessageBox.Yes)
-        db.close()
         return
 
 class ListWindow(QWidget):
 
-    def __init__(self, user):
-        self.user = user
+    def __init__(self, username):
+        super(ListWindow,self).__init__()
+        self.user = username
         self.setFixedSize(600, 400)
         self.setWindowTitle("登记")
         self.set_ui()
@@ -96,7 +97,7 @@ class ListWindow(QWidget):
     def query_window(self):
         pass
 
-    def user_info(self):
+    def user_info_window(self):
         self.close()
         self.window = User(self.user)
         self.window.show()
@@ -104,16 +105,25 @@ class ListWindow(QWidget):
 class User(QWidget):
 
     def __init__(self,user):
-        super(User,self)._init__()
+        super(User,self).__init__()
         self.setWindowTitle('账号信息')
         self.user = user
         self.setFixedSize(300, 400)
         self.set_ui()
 
     def set_ui(self):
+        self.db = DataBase()
+        rslt = self.db.cur.execute('select * from user where id = "%s"'%self.user)
+        rslt_list = rslt.fetchone()
+        self.db.con.close()
+
+        self.username = QLineEdit()
+        self.username.setText(User_List[0])
+        self.username.setReadOnly(True)
+        self.username.setStyleSheet('background-color:#f0f0f0;')
 
         self.name = QLineEdit()
-        self.name.setText(infolist[0])
+        self.name.setText(rslt_list[1])
         self.name.setReadOnly(True)
         self.name.setStyleSheet('background-color:#f0f0f0;')
 
