@@ -49,7 +49,7 @@ class Login(QWidget):
         if (username == '' or password == ''):
             QMessageBox.warning(self,'提示','用户名或密码为空', QMessageBox.Yes, QMessageBox.Yes)
             return
-        sql = 'select * from user where id = "%s"'%username
+        sql = 'select * from user where username = "%s"'%username
         self.db.cur.execute(sql)
         rslt = self.db.cur.fetchone()
         md5 = hashlib.md5()
@@ -66,6 +66,10 @@ class Login(QWidget):
             else:
                 QMessageBox.information(self,'提示','用户名密码错误',QMessageBox.Yes, QMessageBox.Yes)
         return
+
+    def keyPressEvent(self, e):
+        if e.key() == Qt.Key_Return:
+            self.signin()
 
 class ListWindow(QWidget):
 
@@ -102,29 +106,32 @@ class ListWindow(QWidget):
         self.window = User(self.user)
         self.window.show()
 
+
 class User(QWidget):
 
     def __init__(self,user):
         super(User,self).__init__()
         self.setWindowTitle('账号信息')
         self.user = user
+        self.db = DataBase()
         self.setFixedSize(300, 400)
         self.set_ui()
 
     def set_ui(self):
-        self.db = DataBase()
-        rslt = self.db.cur.execute('select * from user where id = "%s"'%self.user)
+        sql = '''select a.*, b.* from user as a, hospital as b
+                where username  = "%s" and a.hospital_id = b.id'''%self.user
+        rslt = self.db.cur.execute(sql)
         rslt_list = rslt.fetchone()
-        self.db.con.close()
+        print(rslt_list)
 
         self.username = QLineEdit()
-        self.username.setText(User_List[0])
+        self.username.setText(rslt_list[0])
         self.username.setReadOnly(True)
         self.username.setStyleSheet('background-color:#f0f0f0;')
 
         self.name = QLineEdit()
         self.name.setText(rslt_list[1])
-        self.name.setReadOnly(True)
+        # self.name.setReadOnly(True)
         self.name.setStyleSheet('background-color:#f0f0f0;')
 
         self.password= QLineEdit()
@@ -138,9 +145,18 @@ class User(QWidget):
         self.password.setClearButtonEnabled(True)
 
         self.hospital= QLineEdit()
-        self.hospital.setText(infolist[3])
+        self.hospital.setText(str(rslt_list[7]))
         self.hospital.setPlaceholderText('请输入单位名称')
         self.hospital.setClearButtonEnabled(True)
+
+        self.code = QLineEdit()
+        self.code.setText(str(rslt_list[8]))
+
+        self.hospital_code = QLineEdit()
+        self.hospital_code.setText(rslt_list[9])
+
+        self.reporter = QLineEdit()
+        self.reporter.setText(rslt_list[11])
 
         self.confirm_bnt = QPushButton('确定(ENT)')
         self.confirm_bnt.clicked.connect(self.confirm_click)
@@ -155,10 +171,14 @@ class User(QWidget):
         self.fbox = QFormLayout()
         self.toolbox = QHBoxLayout()
 
+        self.fbox.addRow('用户名',self.username)
         self.fbox.addRow('姓名',self.name)
         self.fbox.addRow('密码',self.password)
         self.fbox.addRow('确认密码',self.password2)
         self.fbox.addRow('单位名称',self.hospital)
+        self.fbox.addRow('地区编码', self.code)
+        self.fbox.addRow('医院机构代码', self.hospital_code)
+        self.fbox.addRow('报告人', self.reporter)
 
         self.toolbox.addWidget(self.cancel_bnt)
         self.toolbox.addWidget(self.confirm_bnt)
@@ -200,7 +220,7 @@ class User(QWidget):
     def back_click(self):
         self.db.con.close()
         self.close()
-        self.a = ListWindow()
+        self.a = ListWindow(self.user)
         self.a.show()
 
 

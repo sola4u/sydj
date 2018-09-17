@@ -12,13 +12,13 @@ class Create():
         self.cur = self.con.cursor()
 
         user_sql = '''CREATE TABLE IF NOT EXISTS  user (
-                        id int not null ,
-                        name text not null,
+                        username text not null ,
+                        nickname text not null,
                         password text not null,
                         hospital_id int not null,
                         account_level int not null,
                         is_delete boolean not null,
-                        primary key (id)
+                        primary key (username)
                 );'''
         hospital_sql = '''CREATE TABLE IF NOT EXISTS hospital (
                         id int not null,
@@ -115,8 +115,9 @@ class Create():
 
 
 class DataBase():
-    con = sqlite3.connect('base.db')
-    cur = con.cursor()
+    def __init__(self):
+        self.con = sqlite3.connect('base.db')
+        self.cur = self.con.cursor()
 
 if __name__ == '__main__':
     a = Create()
