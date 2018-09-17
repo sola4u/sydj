@@ -4,6 +4,7 @@
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
+from PyQt5.QtWebEngineWidgets import *
 from PyQt5 import QtWidgets
 import sys
 from address import *
@@ -425,7 +426,9 @@ class Regist(QWidget):
         print(self.address_now.text())
 
     def print_record(self):
-        pass
+        self.a = QWebEngineView()
+        self.a.load(QUrl('https://baidu.com'))
+        self.a.show()
 
     def add_record(self):
         pass
@@ -490,7 +493,7 @@ class Regist(QWidget):
             else:
                 self.id_bnt.setText('请点击')
         else:
-            self.id_bnt.setText('请点击')
+            self.id_bnt.setText('未满18位')
 
     def show_birth_cal(self):
         self.cal = Calendar()
@@ -527,30 +530,8 @@ class Regist(QWidget):
 
 
 
-class Regist_Final(QMainWindow):
-    def __init__(self):
-        QMainWindow.__init__(self)
-
-        layout = QWidget()
-
-        regist_window = Regist()
-        regist_window.setMinimumSize(900,600)
-
-        scroll = QScrollArea()
-        scroll.setWidget(regist_window)
-        scroll.setAutoFillBackground(True)
-        scroll.setWidgetResizable(True)
-        self.vbox = QVBoxLayout()
-        self.vbox.addWidget(scroll)
-        layout.setLayout(self.vbox)
-        # self.setWindowFlags(Qt.WindowMinimumizeButtonHint)
-        self.show()
-
-
-
 if __name__ == "__main__":
         app = QApplication(sys.argv)
         mainwindow = Regist()
-        # mainwindow = Regist_Final()
         mainwindow.show()
         sys.exit(app.exec_())
