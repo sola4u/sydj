@@ -143,6 +143,8 @@ class User(QWidget):
 
         self.user_manage_bnt = QPushButton("用户管理")
         self.user_manage_bnt.clicked.connect(self.user_manage)
+        self.hospital_manage_bnt= QPushButton("医院管理")
+        self.hospital_manage_bnt.clicked.connect(self.hospital_manage)
         self.confirm_bnt = QPushButton('确定(ENT)')
         self.confirm_bnt.clicked.connect(self.confirm_click)
         self.cancel_bnt = QPushButton('取消(ESC)')
@@ -156,15 +158,16 @@ class User(QWidget):
         self.fbox = QFormLayout()
         self.toolbox = QHBoxLayout()
 
-        self.fbox.addRow('用户名',self.username)
-        self.fbox.addRow('姓名',self.name)
-        self.fbox.addRow('密码',self.password)
-        self.fbox.addRow('确认密码',self.password2)
-        self.fbox.addRow('单位名称',self.hospital)
-        self.fbox.addRow('地区编码', self.code)
+        self.fbox.addRow('用  户  名',self.username)
+        self.fbox.addRow('姓      名',self.name)
+        self.fbox.addRow('密      码',self.password)
+        self.fbox.addRow('确 认 密 码',self.password2)
+        self.fbox.addRow('单 位 名 称',self.hospital)
+        self.fbox.addRow('地 区 编 码', self.code)
         self.fbox.addRow('医院机构代码', self.hospital_code)
-        self.fbox.addRow('报告人', self.reporter)
+        self.fbox.addRow('报  告  人', self.reporter)
 
+        self.toolbox.addWidget(self.hospital_manage_bnt)
         self.toolbox.addWidget(self.user_manage_bnt)
         self.toolbox.addWidget(self.confirm_bnt)
         self.toolbox.addWidget(self.cancel_bnt)
@@ -183,6 +186,11 @@ class User(QWidget):
 
     def confirm_click(self):
         pass
+
+    def hospital_manage(self):
+        self.close()
+        self.list_window = Hospital_List()
+        self.list_window.show()
 
     def back_click(self):
         self.close()
@@ -204,6 +212,7 @@ class User_Info(User):
 
     def __init__(self,user):
         super(User_Info,self).__init__()
+        self.setFixedSize(600, 400)
         self.db = DataBase()
         self.user = user
         sql = '''select a.*, b.* from user as a, hospital as b
@@ -219,41 +228,53 @@ class User_Info(User):
         self.reporter.setText(rslt_list[11])
         self.username.setStyleSheet('background-color:#f0f0f0;')
 
-        if not rslt_list[4]:
+        if rslt_list[4] < 9:
+            self.hospital_manage_bnt.setVisible(False)
+        elif rslt_list[4] < 1:
             self.user_manage_bnt.setVisible(False)
+        else:
+            pass
 
     def confirm_click(self):
-        if self.password.text() == self.password2.text():
-            a = QMessageBox.information(self,'提示','是否更改信息？',QMessageBox.Yes,QMessageBox.No)
-            if a == QMessageBox.Yes:
-                h5 = hashlib.md5()
-                h5.update(self.password.text().encode(encoding='utf-8'))
-                if self.confirm_bnt.text() == "确定（ENT）":
-                    if self.password.text() == '':
-                        sql = 'update user set  nickname="%s" where username = "%s"'%(self.name.text()), self.user
-                    else:
-                        sql = 'update user set password = "%s", nickname="%s" where username = "%s"'%(h5.hexdigest(), self.name.text(), self.user)
-                    self.db.cur.execute(sql)
+
+        self.db = DataBase()
+        h5 = hashlib.md5()
+        h5.update(self.password.text().encode(encoding='utf-8'))
+
+        if self.confirm_bnt.text() == "确定(ENT)":
+                if self.password.text() == '':
+                    sql = 'update user set  nickname="%s" where username = "%s"'%(self.name.text(), self.user)
+                elif self.password.text() == self.password2.text():
+                    sql = 'update user set password = "%s", nickname="%s" where username = "%s"'%(h5.hexdigest(), self.name.text(), self.user)
                 else:
-                    self.db.cur.execute("select id from hospital where name  = '%s'"%(self.hospital.text()))
-                    hospital_id = int(self.db.cur.fetchone()[0])
-                    print(hospital_id)
-                    if self.password.text() == '':
-                        QMessageBox.information(self,'tips','no password', QMessageBox.Yes, QMessageBox.Yes)
-                    else:
-                        self.db.cur.execute('select * from user where username = "%s"'%(self.username.text()))
-                        if self.db.cur.fetchall():
-                            self.message.setText("用户已经存在")
-                        else:
-                            sql = '''insert into user (username, nickname,password,hospital_id,account_level,is_delete)
-                                values ("{0}","{1}","{2}",{3},{4},{5})'''.format(self.username.text(), self.name.text(),h5.hexdigest(),hospital_id,0,0)
-                            self.db.cur.execute(sql)
-                self.db.con.commit()
-                self.db.con.close()
-            else:
-                pass
+                    self.message.setText('两次输入密码不一致')
+                self.db.cur.execute(sql)
+                msg = QMessageBox.information(self,'提示','确认修改',QMessageBox.Yes, QMessageBox.Yes)
+                if msg == QMessageBox.Yes:
+                    self.db.con.commit()
+                else:
+                    pass
         else:
-            self.message.setText('两次输入密码不一致')
+            self.db.cur.execute("select id from hospital where name  = '%s'"%(self.hospital.text()))
+            hospital_id = int(self.db.cur.fetchone()[0])
+            if self.password.text() == '':
+                self.message.setText("密码未填写")
+            elif self.password.text() != self.password2.text():
+                self.message.setText('两次输入密码不一致')
+            else:
+                self.db.cur.execute('select * from user where username = "%s"'%(self.username.text()))
+                if self.db.cur.fetchall():
+                    self.message.setText("用户已经存在")
+                else:
+                    sql = '''insert into user (username, nickname,password,hospital_id,account_level,is_delete)
+                        values ("{0}","{1}","{2}",{3},{4},{5})'''.format(self.username.text(), self.name.text(),h5.hexdigest(),hospital_id,0,0)
+                    self.db.cur.execute(sql)
+                    msg = QMessageBox.information(self,'提示','确认修改',QMessageBox.Yes, QMessageBox.Yes)
+                    if msg == QMessageBox.Yes:
+                        self.db.con.commit()
+                    else:
+                        pass
+        self.db.con.close()
 
 
 class User_List(QWidget):
@@ -262,7 +283,7 @@ class User_List(QWidget):
         super(User_List, self).__init__()
         self.user = user
         self.setWindowTitle("用户列表")
-        self.resize(600, 400)
+        self.resize(800, 600)
         self.set_ui()
 
     def set_ui(self):
@@ -283,7 +304,8 @@ class User_List(QWidget):
         self.table = QTableWidget(amount, 6)
         self.table.verticalHeader().setVisible(True)
         self.table.setHorizontalHeaderLabels(['帐号','姓名','医院','地区编码','医院组织机构单位','操作'])
-        self.table.resizeColumnToContents(3)
+        # self.table.resizeColumnToContents(5)
+        self.table.setColumnWidth(5,120)
         k = 0
         x = [0,1,7,8,9]
         for i in rslt2:
@@ -291,6 +313,7 @@ class User_List(QWidget):
                 y = str(i[x[j]])
                 self.table.setItem(k,j,QTableWidgetItem(y))
             self.table.setCellWidget(k,5,self.button_row(i[0]))
+            self.table.setRowHeight(k,40)
             k += 1
         self.db.con.close()
 
@@ -310,12 +333,12 @@ class User_List(QWidget):
         self.setLayout(self.layout)
 
     def button_row(self,username):
-        self.view_bnt = QPushButton("view")
-        self.del_bnt = QPushButton("del")
-        self.regret_bnt = QPushButton('regret')
-        self.view_bnt.setStyleSheet('background-color:green; border-style:outset;height:20px;color:white;')
-        self.del_bnt.setStyleSheet('background-color:red; border-style:outset;height:20px;color:white;')
-        self.regret_bnt.setStyleSheet('background-color:grey; border-style: outset;height:20px;color:white;')
+        self.view_bnt = QPushButton("查看")
+        self.del_bnt = QPushButton("停用")
+        self.regret_bnt = QPushButton('重新启用')
+        self.view_bnt.setStyleSheet('''background-color:green; border-style:outset;color:white;''')
+        self.del_bnt.setStyleSheet('background-color:red; border-style:outset;color:white;')
+        self.regret_bnt.setStyleSheet('background-color:grey; border-style: outset;color:white;')
 
         self.view_bnt.clicked.connect(lambda:self.view_record(username))
         self.del_bnt.clicked.connect(lambda:self.del_record(username))
@@ -345,7 +368,6 @@ class User_List(QWidget):
         self.a.user_manage_bnt.setVisible(False)
         self.a.cancel_bnt.clicked.disconnect(self.a.back_click)
         self.a.cancel_bnt.clicked.connect(lambda:self.a.close())
-        # self.a.confirm_bnt.clicked.disconnect(self.a.confirm_click)
         self.a.username.setStyleSheet('background-color:white;')
         self.a.confirm_bnt.setText("添加")
 
@@ -370,7 +392,7 @@ class User_List(QWidget):
         self.a.user_manage_bnt.setVisible(False)
         self.a.cancel_bnt.clicked.disconnect(self.a.back_click)
         # self.a.cancel_bnt.clicked.connect(lambda:self.a.close())
-        self.a.confirm_bnt.setText("添加")
+        self.a.cancel_bnt.clicked.connect(self.view_close_click)
 
     def regret_record(self, username):
         self.db = DataBase()
@@ -389,6 +411,16 @@ class User_List(QWidget):
         self.close()
         self.a = ListWindow(self.user)
         self.a.show()
+
+    def view_close_click(self):
+        self.close()
+        self.a = User_List(self.user)
+        self.a.show()
+
+class Hospital_List(QWidget):
+
+    def __init__(self):
+        super(Hospital_List, self).__init__()
 
 
 if __name__ == "__main__":

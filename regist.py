@@ -8,6 +8,7 @@ from PyQt5.QtWebEngineWidgets import *
 from PyQt5 import QtWidgets
 from address import *
 from calendar import *
+from login import *
 
 class Regist(QWidget):
 
@@ -421,6 +422,8 @@ class Regist(QWidget):
 
     def back_click(self):
         self.close()
+        self.listwindow = ListWindow(self.user)
+        self.listwindow.show()
 
     def save_record(self):
         print(self.address_now.text())
