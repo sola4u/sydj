@@ -233,6 +233,7 @@ class User_Info(User):
                         sql = 'update user set  nickname="%s" where username = "%s"'%(self.name.text()), self.user
                     else:
                         sql = 'update user set password = "%s", nickname="%s" where username = "%s"'%(h5.hexdigest(), self.name.text(), self.user)
+                    self.db.cur.execute(sql)
                 else:
                     self.db.cur.execute("select id from hospital where name  = '%s'"%(self.hospital.text()))
                     hospital_id = int(self.db.cur.fetchone()[0])
@@ -242,11 +243,11 @@ class User_Info(User):
                     else:
                         self.db.cur.execute('select * from user where username = "%s"'%(self.username.text()))
                         if self.db.cur.fetchall():
-                            QMessageBox.information(self,'tips','use exists', QMessageBox.Yes, QMessageBox.No)
+                            self.message.setText("用户已经存在")
                         else:
                             sql = '''insert into user (username, nickname,password,hospital_id,account_level,is_delete)
                                 values ("{0}","{1}","{2}",{3},{4},{5})'''.format(self.username.text(), self.name.text(),h5.hexdigest(),hospital_id,0,0)
-                self.db.cur.execute(sql)
+                            self.db.cur.execute(sql)
                 self.db.con.commit()
                 self.db.con.close()
             else:
@@ -358,6 +359,9 @@ class User_List(QWidget):
         else:
             pass
         self.db.con.close()
+        self.close()
+        self.a = User_List(self.user)
+        self.a.show()
 
     def view_record(self, username):
         self.a = User_Info(username)
@@ -377,6 +381,9 @@ class User_List(QWidget):
         else:
             pass
         self.db.con.close()
+        self.close()
+        self.a = User_List(self.user)
+        self.a.show()
 
     def close_click(self):
         self.close()
