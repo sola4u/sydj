@@ -233,6 +233,11 @@ class User_Info(User):
             self.hospital_manage_bnt.setVisible(False)
         if rslt_list[4] < 1:
             self.user_manage_bnt.setVisible(False)
+        if rslt_list[4] == 9:
+            self.account_level = 1
+        else:
+            self.account_level = 0
+
 
     def confirm_click(self):
 
@@ -266,7 +271,7 @@ class User_Info(User):
                     self.message.setText("用户已经存在")
                 else:
                     sql = '''insert into user (username, nickname,password,hospital_id,account_level,is_delete)
-                        values ("{0}","{1}","{2}",{3},{4},{5})'''.format(self.username.text(), self.name.text(),h5.hexdigest(),hospital_id,0,0)
+                        values ("{0}","{1}","{2}",{3},{4},{5})'''.format(self.username.text(), self.name.text(),h5.hexdigest(),hospital_id,self.account_level,0)
                     self.db.cur.execute(sql)
                     msg = QMessageBox.information(self,'提示','确认修改',QMessageBox.Yes, QMessageBox.Yes)
                     if msg == QMessageBox.Yes:
