@@ -6,8 +6,9 @@ from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from PyQt5 import QtWidgets
 import hashlib
-from data import *
 import sys
+import datetime
+from data import *
 from regist import *
 
 
@@ -188,7 +189,7 @@ class User(QWidget):
         pass
 
     def hospital_manage(self):
-        self.close()
+        # self.close()
         self.list_window = Hospital_List()
         self.list_window.show()
 
@@ -230,10 +231,8 @@ class User_Info(User):
 
         if rslt_list[4] < 9:
             self.hospital_manage_bnt.setVisible(False)
-        elif rslt_list[4] < 1:
+        if rslt_list[4] < 1:
             self.user_manage_bnt.setVisible(False)
-        else:
-            pass
 
     def confirm_click(self):
 
@@ -314,6 +313,7 @@ class User_List(QWidget):
                 self.table.setItem(k,j,QTableWidgetItem(y))
             self.table.setCellWidget(k,5,self.button_row(i[0]))
             self.table.setRowHeight(k,40)
+            self.table.setColumnWidth(k,120)
             k += 1
         self.db.con.close()
 
@@ -336,9 +336,9 @@ class User_List(QWidget):
         self.view_bnt = QPushButton("查看")
         self.del_bnt = QPushButton("停用")
         self.regret_bnt = QPushButton('重新启用')
-        self.view_bnt.setStyleSheet('''background-color:green; border-style:outset;color:white;''')
-        self.del_bnt.setStyleSheet('background-color:red; border-style:outset;color:white;')
-        self.regret_bnt.setStyleSheet('background-color:grey; border-style: outset;color:white;')
+        self.view_bnt.setStyleSheet('''background-color:green; height:60px; border-style:outset;color:white;''')
+        self.del_bnt.setStyleSheet('background-color:red; height:60px; border-style:outset;color:white;')
+        self.regret_bnt.setStyleSheet('background-color:grey; height:60px; border-style: outset;color:white;')
 
         self.view_bnt.clicked.connect(lambda:self.view_record(username))
         self.del_bnt.clicked.connect(lambda:self.del_record(username))
@@ -421,11 +421,201 @@ class Hospital_List(QWidget):
 
     def __init__(self):
         super(Hospital_List, self).__init__()
+        self.setFixedSize(600, 400)
+
+        self.add_bnt = QPushButton("添加")
+        self.back_bnt = QPushButton("close")
+        self.add_bnt.clicked.connect(self.add_record)
+        self.back_bnt.clicked.connect(self.back_click)
+
+        self.db = DataBase()
+        self.db.cur.execute("select id,name,code,depart_code,reporter from hospital")
+        rslt = self.db.cur.fetchall()
+        self.db.con.close()
+        column = len(rslt)
+        self.table = QTableWidget(column, 6)
+        self.table.setHorizontalHeaderLabels(['医院编码','医院名称','地区代码','组织机构代码','报告人','操作'])
+        k = 0
+        for i in rslt:
+            for j in range(len(i)):
+                x = str(i[j])
+                self.table.setItem(k,j,QTableWidgetItem(x))
+                self.table.setColumnWidth(k,80)
+                self.table.setRowHeight(k,40)
+            self.table.setCellWidget(k,5,self.button_row(i[0]))
+            k += 1
+
+
+        self.layout = QVBoxLayout()
+        self.bnt_layout = QHBoxLayout()
+        self.bnt_layout2 = QWidget()
+
+        self.bnt_layout.addWidget(self.add_bnt)
+        self.bnt_layout.addWidget(self.back_bnt)
+
+        self.bnt_layout2.setLayout(self.bnt_layout)
+
+        self.layout.addWidget(self.table)
+        self.layout.addWidget(self.bnt_layout2)
+        self.setLayout(self.layout)
+
+    def button_row(self, id):
+        self.edit_bnt = QPushButton("查看")
+        self.del_bnt = QPushButton("停用")
+        self.regret_bnt = QPushButton("重新启用")
+        self.edit_bnt.setStyleSheet('''background-color:green; border-style:outset;height:60px; color:white;''')
+        self.del_bnt.setStyleSheet('''background-color:red; border-style:outset; height:60px; color:white;''')
+        self.regret_bnt.setStyleSheet('''background-color:blue; border-style:outset; height:60px; color:white;''')
+        self.edit_bnt.clicked.connect(lambda:self.edit_record(id))
+        self.del_bnt.clicked.connect(lambda:self.del_record(id))
+        self.regret_bnt.clicked.connect(lambda:self.regret_record(id))
+
+        self.layout = QHBoxLayout()
+        self.widget = QWidget()
+        self.db = DataBase()
+        self.db.cur.execute("select is_delete from hospital where id = %d"%(id))
+        rslt = self.db.cur.fetchone()[0]
+        self.db.con.close()
+        if rslt:
+            self.layout.addWidget(self.regret_bnt)
+        else:
+            self.layout.addWidget(self.edit_bnt)
+            self.layout.addWidget(self.del_bnt)
+        self.widget.setLayout(self.layout)
+        return self.widget
+
+
+    def add_record(self):
+        self.close()
+        self.a = Hospital_Info(0)
+        self.a.show()
+        self.a.confirm_bnt.setText("添加")
+
+    def edit_record(self, id):
+        self.close()
+        self.a = Hospital_Info(id)
+        self.a.show()
+        self.a.confirm_bnt.setText("更新")
+        self.a.id.setReadOnly(True)
+
+    def del_record(self, id):
+        self.db = DataBase()
+        self.db.cur.execute('update hospital set is_delete = 1 where id = %d'%(id))
+        self.db.con.commit()
+        self.db.con.close()
+        self.close()
+        self.a = Hospital_List()
+        self.a.show()
+
+    def regret_record(self, id):
+        self.db = DataBase()
+        self.db.cur.execute('update hospital set is_delete = 0 where id = %d'%(id))
+        self.db.con.commit()
+        self.db.con.close()
+        self.close()
+        self.a = Hospital_List()
+        self.a.show()
+
+    def back_click(self):
+        self.close()
+
+class Hospital_Info(QWidget):
+
+    def __init__(self, id):
+        super(Hospital_Info, self).__init__()
+        self.setFixedSize(400, 600)
+        self.setWindowTitle("医院信息")
+        self.hospital_id = id
+        self.set_ui()
+
+    def set_ui(self):
+        self.id_lable = QLabel("编号")
+        self.id = QLineEdit()
+        self.name_label = QLabel("医院名称")
+        self.name = QLineEdit()
+        self.code_lael = QLabel("地区编码")
+        self.code = QLineEdit()
+        self.depart_code_label = QLabel("组织机构代码")
+        self.depart_code = QLineEdit()
+        self.reporter_label = QLabel("报告人")
+        self.reporter = QLineEdit()
+        self.confirm_bnt = QPushButton("确定")
+        self.close_bnt= QPushButton("取消")
+        self.confirm_bnt.clicked.connect(self.confirm_click)
+        self.close_bnt.clicked.connect(self.close_click)
+
+        if self.hospital_id:
+            self.db = DataBase()
+            self.db.cur.execute("select * from hospital where id = %d"%(self.hospital_id))
+            rslt = self.db.cur.fetchone()
+            self.db.con.close()
+            self.id.setText(str(rslt[0]))
+            self.name.setText(rslt[1])
+            self.code.setText(str(rslt[2]))
+            self.depart_code.setText(rslt[3])
+            self.reporter.setText(rslt[5])
+
+        self.layout = QGridLayout()
+        self.layout.addWidget(self.id_lable,0,0)
+        self.layout.addWidget(self.id,0,1)
+        self.layout.addWidget(self.name_label,1,0)
+        self.layout.addWidget(self.name,1,1)
+        self.layout.addWidget(self.code_lael,2,0)
+        self.layout.addWidget(self.code,2,1)
+        self.layout.addWidget(self.depart_code_label,3,0)
+        self.layout.addWidget(self.depart_code,3,1)
+        self.layout.addWidget(self.reporter_label,4,0)
+        self.layout.addWidget(self.reporter,4,1)
+
+        self.bnt_layout = QHBoxLayout()
+        self.bnt_layout.addWidget(self.confirm_bnt)
+        self.bnt_layout.addWidget(self.close_bnt)
+        self.bnt_layout2 = QWidget()
+        self.bnt_layout2.setLayout(self.bnt_layout)
+        self.grid_layout = QWidget()
+        self.grid_layout.setLayout(self.layout)
+        self.main_layout = QVBoxLayout()
+        self.main_layout.addWidget(self.grid_layout)
+        self.main_layout.addWidget(self.bnt_layout2)
+        self.setLayout(self.main_layout)
+
+    def confirm_click(self):
+        self.close()
+        self.db = DataBase()
+        if self.confirm_bnt.text() == "添加":
+            self.db.cur.execute("select id from hospital where id = %d"%(int(self.id.text())))
+            rslt = self.db.cur.fetchone()
+            if rslt:
+                QMessageBox.warning(self,'tips','用户已存在',QMessageBox.Yes,QMessageBox.Yes)
+            else:
+                sql1 = 'insert into hospital values ({0},"{1}",{2},"{3}",{4},"{5}")'.format(int(self.id.text()), self.name.text(),int(self.code.text()),self.depart_code.text(),0,self.reporter.text())
+                sql2 = 'insert into bianhao values ({0},{1},{2},{3})'.format(int(self.id.text()),'1',datetime.datetime.now().year,1)
+                self.db.cur.execute(sql1)
+                self.db.cur.execute(sql2)
+                msg = QMessageBox.information(self, "tips",'确认提交',QMessageBox.Yes, QMessageBox.No)
+                if msg == QMessageBox.Yes:
+                    self.db.con.commit()
+                else:
+                    pass
+        else:
+            sql = '''update hospital set id = %d,name = "%s",code = %d,
+                        depart_code="%s",reporter="%s" where id = %d'''%(int(self.id.text()), self.name.text(),int(self.code.text()),self.depart_code.text(),self.reporter.text(),self.hospital_id)
+            self.db.cur.execute(sql)
+            msg = QMessageBox.information(self, "tips",'确认提交',QMessageBox.Yes, QMessageBox.No)
+            if msg == QMessageBox.Yes:
+                self.db.con.commit()
+            else:
+                pass
+        self.db.con.close()
+        self.a = Hospital_List()
+        self.a.show()
+
+    def close_click(self):
+        self.close()
 
 
 if __name__ == "__main__":
         app = QApplication(sys.argv)
         mainwindow = Login()
-        # mainwindow = User_Info()
         mainwindow.show()
         sys.exit(app.exec_())

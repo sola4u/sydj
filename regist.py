@@ -28,6 +28,13 @@ class Regist(QWidget):
         self.layout.setColumnStretch(2,1)
         self.layout.setColumnStretch(3,2)
 
+        self.db = DataBase()
+        self.db.cur.execute("select a.*,b.* from user as a, hospital as b where a.hospital_id = b.id and a.username = '%s'"%(self.user))
+        rslt = self.db.cur.fetchall()[0]
+        self.db.cur.execute("select name from hospital")
+        hospital_rslt = self.db.cur.fetchall()
+        self.db.con.close()
+
         self.title= QLabel("登        记")
         self.title.setStyleSheet('''font-size:40px;''')
         self.title.setAlignment(Qt.AlignCenter)
@@ -37,7 +44,10 @@ class Regist(QWidget):
         self.report_distinct.setReadOnly(True)
 
         self.report_depart_label = QLabel("报告单位")
-        self.report_department = QLineEdit()
+        # self.report_department = QLineEdit()
+        self.report_department = QComboBox()
+        for i in hospital_rslt:
+            self.report_department.addItem(i[0])
 
         self.number_label = QLabel('编号')
         self.number = QLineEdit()
@@ -70,12 +80,14 @@ class Regist(QWidget):
         self.race_label = QLabel('民族')
         self.race = QComboBox()
         self.race.setEditable(True)
-        self.race.addItem('汉族')
-        self.race.addItem('回族')
-        self.race.addItem('蒙古族')
-        self.race.addItem('壮族')
-        self.race.addItem('藏族')
-        self.race.addItem('维吾尔族')
+        race_list = ['汉族','蒙古族','回族','藏族','维吾尔族','苗族','彝族','壮族','布依族','朝鲜族',
+                    '满族','侗族','瑶族','白族','土家族','哈尼族','哈萨克族','傣族','黎族','傈傈族',
+                    '佤族','畲族','高山族','拉祜族','水族','东乡族','纳西族','景颇族','柯尔克孜族','土族',
+                    '达斡尔族','仫佬族','羌族','布朗族','撒拉族','毛南族','仡佬族','锡伯族','阿昌族','普米族',
+                    '怒族','乌孜别克族','俄罗斯族','鄂温克族','德昂族','保安族','裕固族','京族','塔塔尔族','独龙族',
+                    '鄂伦春族','赫哲族','门巴族','珞巴族','基诺族','外国血统中国籍人士','其他','不详']
+        for i in race_list:
+            self.race.addItem(i)
 
         self.nation_label = QLabel('国家或地区')
         self.nation = QLineEdit("中国")
@@ -288,6 +300,11 @@ class Regist(QWidget):
         self.add_bnt = QPushButton('添加(F1)')
         self.add_bnt.clicked.connect(self.add_record)
 
+        self.doctor.setText(rslt[1])
+        self.report_distinct.setText(str(rslt[8]))
+        self.report_department.setCurrentText(rslt[7])
+        self.reporter.setText(rslt[-1])
+
         self.bnt_layout = QHBoxLayout()
         self.bnt_layout2 = QWidget()
         self.bnt_layout.addWidget(self.add_bnt)
@@ -396,7 +413,6 @@ class Regist(QWidget):
         self.layout.addWidget(self.research_date_choose,47,2)
 
 
-        self.layout.addWidget(self.bnt_layout2,50,0,1,4)
 
         # self.setLayout(self.layout)
 
@@ -414,6 +430,8 @@ class Regist(QWidget):
         self.layout3 = QVBoxLayout()
         self.layout3.addWidget(self.title)
         self.layout3.addWidget(self.scroll)
+        # self.layout.addWidget(self.bnt_layout2,50,0,1,4)
+        self.layout3.addWidget(self.bnt_layout2)
 
         self.setLayout(self.layout3)
         # self.setLayout(self.scroll)
@@ -426,7 +444,34 @@ class Regist(QWidget):
         self.listwindow.show()
 
     def save_record(self):
-        print(self.address_now.text())
+        a = self.get_bianhao()
+        bianhao = str(a[0]) + str(a[1]) + str(a[2]).zfill(3)
+        print(bianhao)
+
+        self.db = DataBase()
+
+        self.db.cur.execute("update bianhao set last_year = %d, last_number = %d where hospital_id = %d"%(bianhao[1], bianhao[2], bianhao[3]))
+        self.db.con.commit()
+        self.db.con.close()
+
+    def get_bianhao(self):
+        self.db = DataBase()
+        self.db.cur.execute("select hospital_id from user where username = '%s'"%(self.user))
+        hospital_id = self.db.cur.fetchone()[0]
+        self.db.cur.execute("select * from bianhao where hospital_id = %d"%(hospital_id))
+        rslt = self.db.cur.fetchone()
+        year_now = datetime.datetime.now().year
+        if year_now > rslt[2]:
+            year = year_now
+            last_number = 1
+        else:
+            year = rslt[2]
+            last_number = rslt[3] + 1
+        self.db.cur.execute('select depart_code from hospital where id = %d'%(hospital_id))
+        depart_code = self.db.cur.fetchone()[0]
+        self.db.con.close()
+        return [depart_code, year, last_number, hospital_id]
+
 
     def print_record(self):
         self.a = QWebEngineView()
