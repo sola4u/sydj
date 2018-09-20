@@ -220,6 +220,7 @@ class User(QWidget):
         self.db.con.close()
         self.code.setText(rslt[3])
         self.reporter.setText(rslt[5])
+        self.hospital_id = rslt[0]
 
 
     def keyPressEvent(self, e):
