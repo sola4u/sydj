@@ -239,6 +239,7 @@ class User_Info(User):
                 where username  = "%s" and a.hospital_id = b.id'''%self.user
         rslt = self.db.cur.execute(sql)
         rslt_list = rslt.fetchone()
+        self.hospital_id = rslt_list[3]
         self.db.con.close()
         self.username.setText(rslt_list[0])
         self.username.setReadOnly(True)
@@ -254,11 +255,8 @@ class User_Info(User):
         if rslt_list[4] < 1:
             self.user_manage_bnt.setVisible(False)
         if rslt_list[4] == 9:
-            self.account_level = 1
             self.code.setReadOnly(False)
             self.reporter.setReadOnly(False)
-        else:
-            self.account_level = 0
 
 
     def confirm_click(self):
@@ -266,26 +264,24 @@ class User_Info(User):
         self.db = DataBase()
         h5 = hashlib.md5()
         h5.update(self.password.text().encode(encoding='utf-8'))
-        self.db.cur.execute("select account_level from user where username = '%s'"%(self.user))
-        accout_level = self.db.cur.fetchone()[0]
+        # self.db.cur.execute("select account_level from user where username = '%s'"%(self.user))
+        # accout_level = self.db.cur.fetchone()[0]
 
         if self.confirm_bnt.text() == "确定(ENT)":
-                if accout_level < 9:
-                    if self.password.text() == '':
-                        sql = 'update user set  nickname="%s" where username = "%s"'%(self.name.text(), self.user)
-                    elif self.password.text() == self.password2.text():
-                        sql = 'update user set password = "%s", nickname="%s" where username = "%s"'%(h5.hexdigest(), self.name.text(), self.user)
-                    else:
-                        self.message.setText('两次输入密码不一致')
+                # if self.accout_level < 9:
+                    # if self.password.text() == '':
+                        # sql = 'update user set  nickname="%s" where username = "%s"'%(self.name.text(), self.user)
+                    # elif self.password.text() == self.password2.text():
+                        # sql = 'update user set password = "%s", nickname="%s" where username = "%s"'%(h5.hexdigest(), self.name.text(), self.user)
+                    # else:
+                        # self.message.setText('两次输入密码不一致')
+                # else:
+                if self.password.text() == '':
+                    sql = 'update user set  nickname="%s",hospital_id = "%s" where username = "%s"'%(self.name.text(),self.hospital_id, self.user)
+                elif self.password.text() == self.password2.text():
+                    sql = 'update user set password = "%s", nickname="%s",hospital_id = "%s" where username = "%s"'%(h5.hexdigest(), self.name.text(), self.hospital_id,self.user)
                 else:
-                    self.db.cur.execute("select id from hospital where name  = '%s'"%(self.hospital.currentText()))
-                    self.hospital_id = int(self.db.cur.fetchone()[0])
-                    if self.password.text() == '':
-                        sql = 'update user set  nickname="%s",hospital_id = "%s" where username = "%s"'%(self.name.text(),self.hospital, self.user)
-                    elif self.password.text() == self.password2.text():
-                        sql = 'update user set password = "%s", nickname="%s",hospital_id = "%s" where username = "%s"'%(h5.hexdigest(), self.name.text(), self.hospital,self.user)
-                    else:
-                        self.message.setText('两次输入密码不一致')
+                    self.message.setText('两次输入密码不一致')
                 self.db.cur.execute(sql)
                 print(sql)
                 msg = QMessageBox.information(self,'提示','确认修改',QMessageBox.Yes, QMessageBox.Yes)
@@ -319,25 +315,25 @@ class User_List(QWidget):
     def __init__(self, user):
         super(User_List, self).__init__()
         self.user = user
+        self.db = DataBase()
+        sql1 = '''select hospital_id, account_level from user where  username = "%s"'''%(self.user)
+        self.db.cur.execute(sql1)
+        self.rslt = self.db.cur.fetchone()
+        if self.rslt[1] == 9:
+            sql2 = '''select a.*, b.* from user as a, hospital as b where a.hospital_id = b.id'''
+        else:
+            id_rslt = self.rslt[0]
+            sql2 = '''select a.*, b.* from user as a, hospital as b where a.hospital_id = b.id and
+                 a.hospital_id = "%s"'''%(id_rslt)
+        self.db.cur.execute(sql2)
+        self.rslt2 = self.db.cur.fetchall()
+        self.db.con.close()
         self.setWindowTitle("用户列表")
         self.resize(800, 600)
         self.set_ui()
 
     def set_ui(self):
-        self.db = DataBase()
-        sql1 = '''select hospital_id, account_level from user where  username = "%s"'''%(self.user)
-        self.db.cur.execute(sql1)
-        rslt = self.db.cur.fetchone()
-        if rslt[1] == 9:
-            sql2 = '''select a.*, b.* from user as a, hospital as b where a.hospital_id = b.id'''
-        else:
-            id_rslt = rslt[0]
-            sql2 = '''select a.*, b.* from user as a, hospital as b where a.hospital_id = b.id and
-                 a.hospital_id = "%s"'''%(id_rslt)
-        self.db.cur.execute(sql2)
-        rslt2 = self.db.cur.fetchall()
-        self.db.con.close()
-        amount = len(rslt2)
+        amount = len(self.rslt2)
         self.table = QTableWidget(amount, 6)
         self.table.verticalHeader().setVisible(True)
         self.table.setHorizontalHeaderLabels(['帐号','姓名','医院','地区编码','医院组织机构单位','操作'])
@@ -345,7 +341,7 @@ class User_List(QWidget):
         self.table.setColumnWidth(5,120)
         k = 0
         x = [0,1,7,8,9]
-        for i in rslt2:
+        for i in self.rslt2:
             for j in range(5):
                 y = str(i[x[j]])
                 self.table.setItem(k,j,QTableWidgetItem(y))
@@ -429,6 +425,8 @@ class User_List(QWidget):
         self.a.username.setReadOnly(False)
         self.a.user_manage_bnt.setVisible(False)
         self.a.cancel_bnt.clicked.disconnect(self.a.back_click)
+        if self.rslt[1] < 9:
+            self.a.hospital.currentTextChanged.disconnect(self.a.hospital_info_autuofill)
         # self.a.cancel_bnt.clicked.connect(lambda:self.a.close())
         self.a.cancel_bnt.clicked.connect(self.view_close_click)
 
