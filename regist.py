@@ -9,6 +9,7 @@ from PyQt5 import QtWidgets
 from address import *
 from calendar import *
 from login import *
+import address_dic
 
 class Regist(QWidget):
 
@@ -301,7 +302,9 @@ class Regist(QWidget):
         self.add_bnt.clicked.connect(self.add_record)
 
         self.doctor.setText(rslt[1])
-        self.report_distinct.setText(str(rslt[8]))
+        self.report_distinct_code = str(rslt[8])
+        report_distinct_name = address_dic.county_dic[self.report_distinct_code[:4]][self.report_distinct_code[:6]]
+        self.report_distinct.setText(report_distinct_name)
         self.report_department.setCurrentText(rslt[7])
         self.reporter.setText(rslt[-1])
 
@@ -444,13 +447,14 @@ class Regist(QWidget):
         self.listwindow.show()
 
     def save_record(self):
-        a = self.get_bianhao()
-        bianhao = str(a[0]) + str(a[1]) + str(a[2]).zfill(3)
-        print(bianhao)
+        bianhao_list = self.get_bianhao()
+        bianhao = str(bianhao_list[0]) + str(bianhao_list[1]) + str(bianhao_list[2]).zfill(4)
 
         self.db = DataBase()
+        self.db.cur.execute("update bianhao set last_year = %d, last_number = %d where hospital_id = %d"%(bianhao_list[1], bianhao_list[2], bianhao_list[3]))
+        data = {
 
-        self.db.cur.execute("update bianhao set last_year = %d, last_number = %d where hospital_id = %d"%(bianhao[1], bianhao[2], bianhao[3]))
+        }
         self.db.con.commit()
         self.db.con.close()
 

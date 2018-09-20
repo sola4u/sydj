@@ -5,7 +5,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from PyQt5 import QtWidgets
-import a
+import address_dic
 import sys
 
 class Address(QWidget):
@@ -13,10 +13,10 @@ class Address(QWidget):
     def __init__(self):
         super(Address,self).__init__()
         self.setFixedSize(500,200)
-        self.province_list = a.province_dic
-        self.city_list = a.city_dic
-        self.county_list = a.county_dic
-        self.town_list = a.town_dic
+        self.province_list = address_dic.province_dic
+        self.city_list = address_dic.city_dic
+        self.county_list = address_dic.county_dic
+        self.town_list = address_dic.town_dic
         self.set_ui()
 
     def set_ui(self):

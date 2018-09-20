@@ -17,7 +17,7 @@ class Create():
                         password text not null,
                         hospital_id int not null,
                         account_level int not null,
-                        is_delete boolean not null,
+                        is_delete int not null,
                         primary key (username)
                 );'''
         hospital_sql = '''CREATE TABLE IF NOT EXISTS hospital (
@@ -25,7 +25,7 @@ class Create():
                         name text not null,
                         code int not null,
                         depart_code text not null,
-                        is_delete boolean not null,
+                        is_delete int not null,
                         reporter text not null,
                         primary key (id)
                 ); '''
@@ -34,7 +34,7 @@ class Create():
                        last_id text not null,
                        last_year int not null,
                        last_number int not null,
-                        primary key (hospital_id)
+                       primary key (hospital_id)
                 );'''
         gender_sql = '''CREATE TABLE IF NOT EXISTS gender (
                         gender_serial int not null,
@@ -77,6 +77,14 @@ class Create():
                         diagnost_method_name text not null,
                         primary key (diagnost_method_serial)
                 );'''
+        death_info_sql = '''CREATE  TABLE IF NOT EXISTS death_info (
+                        report_distinct_code text not null,
+                        report_department    text not null,
+                        serial_number        text not null,
+                        name                 text not null,
+                        gender
+
+                );'''
         self.cur.execute(user_sql)
         self.cur.execute(hospital_sql)
         self.cur.execute(bianhao_sql)
@@ -104,6 +112,8 @@ class Create():
         death_point_sql_initial = '''INSERT INTO death_point VALUES (1,'医疗卫生机构'),(2,'来院途中'),(3,'家中'),(4,'养老服务机构'),(5,'其他场所'),(6,'不详');'''
         diagnost_hospital_sql_initial = '''INSERT INTO diagnost_hospital VALUES (1,'三级医院'),(2,'二级医院'),(3,'乡镇卫生院或社区卫生服务中心'),(4,'村卫生室'),(5,'其他医疗卫生机构'),(6,'未就诊');'''
         diagnost_method_sql_initial = '''INSERT INTO diagnost_method VALUES (1,'尸检'),(2,'病理'),(3,'手术'),(4,'临床+理化'),(5,'临床'),(6,'死后推断'),(7,'不详')'''
+        user_initial = '''INSERT INTO user VALUES ('admin', 'admin', '202cb962ac59075b964b07152d234b70',0,9,0)'''
+        hospital_initial = '''INSERT INTO hospital VALUES (0,'admin',00000000,'000000',0,'admin')'''
         self.cur.execute(gender_sql_initial)
         self.cur.execute(occupation_sql_initial)
         self.cur.execute(marriage_sql_initial)
@@ -111,6 +121,8 @@ class Create():
         self.cur.execute(death_point_sql_initial)
         self.cur.execute(diagnost_hospital_sql_initial)
         self.cur.execute(diagnost_method_sql_initial)
+        self.cur.execute(user_initial)
+        self.cur.execute(hospital_initial)
         self.con.commit()
 
 

@@ -128,9 +128,17 @@ class User(QWidget):
         self.password2.setEchoMode(QLineEdit.PasswordEchoOnEdit)
         self.password.setClearButtonEnabled(True)
 
-        self.hospital= QLineEdit()
-        self.hospital.setReadOnly(True)
+
+        self.hospital = QComboBox()
+        self.db = DataBase()
+        sql2 = 'select * from hospital'
+        rslt2 = self.db.cur.execute(sql2)
+        rslt2_list = self.db.cur.fetchall()
+        self.db.con.close()
+        for i in rslt2_list:
+            self.hospital.addItem(i[1])
         self.hospital.setStyleSheet('background-color:#f0f0f0;')
+        self.hospital.currentTextChanged.connect(self.hospital_info_autuofill)
 
         self.code = QLineEdit()
         self.code.setReadOnly(True)
@@ -203,6 +211,17 @@ class User(QWidget):
         self.a = User_List(self.user)
         self.a.show()
 
+    def hospital_info_autuofill(self):
+        self.db = DataBase()
+        name = self.hospital.currentText()
+        sql = 'select * from hospital where name = "%s"'%(name)
+        tmp = self.db.cur.execute(sql)
+        rslt = self.db.cur.fetchone()
+        self.db.con.close()
+        self.code.setText(rslt[3])
+        self.reporter.setText(rslt[5])
+
+
     def keyPressEvent(self, e):
         if e.key() == Qt.Key_Escape:
             self.back_click()
@@ -220,12 +239,13 @@ class User_Info(User):
                 where username  = "%s" and a.hospital_id = b.id'''%self.user
         rslt = self.db.cur.execute(sql)
         rslt_list = rslt.fetchone()
+        self.db.con.close()
         self.username.setText(rslt_list[0])
         self.username.setReadOnly(True)
         self.name.setText(rslt_list[1])
-        self.hospital.setText(str(rslt_list[7]))
         self.code.setText(str(rslt_list[8]))
         self.hospital_code.setText(rslt_list[9])
+        self.hospital.setCurrentText(rslt_list[7])
         self.reporter.setText(rslt_list[11])
         self.username.setStyleSheet('background-color:#f0f0f0;')
 
@@ -235,6 +255,8 @@ class User_Info(User):
             self.user_manage_bnt.setVisible(False)
         if rslt_list[4] == 9:
             self.account_level = 1
+            self.code.setReadOnly(False)
+            self.reporter.setReadOnly(False)
         else:
             self.account_level = 0
 
