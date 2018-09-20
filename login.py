@@ -266,23 +266,34 @@ class User_Info(User):
         self.db = DataBase()
         h5 = hashlib.md5()
         h5.update(self.password.text().encode(encoding='utf-8'))
+        self.db.cur.execute("select account_level from user where username = '%s'"%(self.user))
+        accout_level = self.db.cur.fetchone()[0]
 
         if self.confirm_bnt.text() == "确定(ENT)":
-                if self.password.text() == '':
-                    sql = 'update user set  nickname="%s" where username = "%s"'%(self.name.text(), self.user)
-                elif self.password.text() == self.password2.text():
-                    sql = 'update user set password = "%s", nickname="%s" where username = "%s"'%(h5.hexdigest(), self.name.text(), self.user)
+                if accout_level < 9:
+                    if self.password.text() == '':
+                        sql = 'update user set  nickname="%s" where username = "%s"'%(self.name.text(), self.user)
+                    elif self.password.text() == self.password2.text():
+                        sql = 'update user set password = "%s", nickname="%s" where username = "%s"'%(h5.hexdigest(), self.name.text(), self.user)
+                    else:
+                        self.message.setText('两次输入密码不一致')
                 else:
-                    self.message.setText('两次输入密码不一致')
+                    self.db.cur.execute("select id from hospital where name  = '%s'"%(self.hospital.currentText()))
+                    self.hospital_id = int(self.db.cur.fetchone()[0])
+                    if self.password.text() == '':
+                        sql = 'update user set  nickname="%s",hospital_id = "%s" where username = "%s"'%(self.name.text(),self.hospital, self.user)
+                    elif self.password.text() == self.password2.text():
+                        sql = 'update user set password = "%s", nickname="%s",hospital_id = "%s" where username = "%s"'%(h5.hexdigest(), self.name.text(), self.hospital,self.user)
+                    else:
+                        self.message.setText('两次输入密码不一致')
                 self.db.cur.execute(sql)
+                print(sql)
                 msg = QMessageBox.information(self,'提示','确认修改',QMessageBox.Yes, QMessageBox.Yes)
                 if msg == QMessageBox.Yes:
                     self.db.con.commit()
                 else:
                     pass
         else:
-            self.db.cur.execute("select id from hospital where name  = '%s'"%(self.hospital.text()))
-            hospital_id = int(self.db.cur.fetchone()[0])
             if self.password.text() == '':
                 self.message.setText("密码未填写")
             elif self.password.text() != self.password2.text():
