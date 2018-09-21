@@ -51,7 +51,6 @@ class Create():
                         race_name text not null,
                         primary key (race_serial)
                );'''
-        # race_sql_initial = '''INSERT INTO race VALUES (1,''),'''
         marriage_sql = '''CREATE TABLE IF NOT EXISTS marriage (
                         marriage_serial int not null,
                         marriage_name  text not null,
