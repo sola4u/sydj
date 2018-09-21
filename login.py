@@ -60,9 +60,12 @@ class Login(QWidget):
             QMessageBox.information(self,'提示','帐号不存在',QMessageBox.Yes, QMessageBox.Yes)
         else:
             if password_md5.hexdigest() == rslt[2]:
-                mainwindow.close()
-                self.listwindow = ListWindow(username)
-                self.listwindow.show()
+                if not rslt[-1]:
+                    mainwindow.close()
+                    self.listwindow = ListWindow(username)
+                    self.listwindow.show()
+                else:
+                    QMessageBox.information(self,'提示','帐号已停用',QMessageBox.Yes, QMessageBox.Yes)
             else:
                 QMessageBox.information(self,'提示','用户名密码错误',QMessageBox.Yes, QMessageBox.Yes)
         return
@@ -218,7 +221,8 @@ class User(QWidget):
         tmp = self.db.cur.execute(sql)
         rslt = self.db.cur.fetchone()
         self.db.con.close()
-        self.code.setText(rslt[3])
+        self.code.setText(str(rslt[2]))
+        self.hospital_code.setText(rslt[3])
         self.reporter.setText(rslt[5])
         self.hospital_id = rslt[0]
 
@@ -253,11 +257,15 @@ class User_Info(User):
 
         if rslt_list[4] < 9:
             self.hospital_manage_bnt.setVisible(False)
+            self.hospital.currentTextChanged.disconnect(self.hospital_info_autuofill)
         if rslt_list[4] < 1:
             self.user_manage_bnt.setVisible(False)
         if rslt_list[4] == 9:
+            self.accout_level = 1
             self.code.setReadOnly(False)
             self.reporter.setReadOnly(False)
+        else:
+            self.accout_level = 0
 
 
     def confirm_click(self):
@@ -265,18 +273,8 @@ class User_Info(User):
         self.db = DataBase()
         h5 = hashlib.md5()
         h5.update(self.password.text().encode(encoding='utf-8'))
-        # self.db.cur.execute("select account_level from user where username = '%s'"%(self.user))
-        # accout_level = self.db.cur.fetchone()[0]
 
         if self.confirm_bnt.text() == "确定(ENT)":
-                # if self.accout_level < 9:
-                    # if self.password.text() == '':
-                        # sql = 'update user set  nickname="%s" where username = "%s"'%(self.name.text(), self.user)
-                    # elif self.password.text() == self.password2.text():
-                        # sql = 'update user set password = "%s", nickname="%s" where username = "%s"'%(h5.hexdigest(), self.name.text(), self.user)
-                    # else:
-                        # self.message.setText('两次输入密码不一致')
-                # else:
                 if self.password.text() == '':
                     sql = 'update user set  nickname="%s",hospital_id = "%s" where username = "%s"'%(self.name.text(),self.hospital_id, self.user)
                 elif self.password.text() == self.password2.text():
@@ -284,7 +282,6 @@ class User_Info(User):
                 else:
                     self.message.setText('两次输入密码不一致')
                 self.db.cur.execute(sql)
-                print(sql)
                 msg = QMessageBox.information(self,'提示','确认修改',QMessageBox.Yes, QMessageBox.Yes)
                 if msg == QMessageBox.Yes:
                     self.db.con.commit()
@@ -301,7 +298,7 @@ class User_Info(User):
                     self.message.setText("用户已经存在")
                 else:
                     sql = '''insert into user (username, nickname,password,hospital_id,account_level,is_delete)
-                        values ("{0}","{1}","{2}",{3},{4},{5})'''.format(self.username.text(), self.name.text(),h5.hexdigest(),hospital_id,self.account_level,0)
+                        values ("{0}","{1}","{2}",{3},{4},{5})'''.format(self.username.text(), self.name.text(),h5.hexdigest(),self.hospital_id,self.accout_level,0)
                     self.db.cur.execute(sql)
                     msg = QMessageBox.information(self,'提示','确认修改',QMessageBox.Yes, QMessageBox.Yes)
                     if msg == QMessageBox.Yes:
@@ -406,7 +403,6 @@ class User_List(QWidget):
         self.a.username.setStyleSheet('background-color:white;')
         self.a.confirm_bnt.setText("添加")
 
-
     def del_record(self, username):
         self.db = DataBase()
         self.db.cur.execute('update user set is_delete = 1 where username = "%s"'%(username))
@@ -426,8 +422,8 @@ class User_List(QWidget):
         self.a.username.setReadOnly(False)
         self.a.user_manage_bnt.setVisible(False)
         self.a.cancel_bnt.clicked.disconnect(self.a.back_click)
-        if self.rslt[1] < 9:
-            self.a.hospital.currentTextChanged.disconnect(self.a.hospital_info_autuofill)
+        if self.rslt[1] == 9:
+            self.a.hospital.currentTextChanged.connect(self.a.hospital_info_autuofill)
         # self.a.cancel_bnt.clicked.connect(lambda:self.a.close())
         self.a.cancel_bnt.clicked.connect(self.view_close_click)
 
