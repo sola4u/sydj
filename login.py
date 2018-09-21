@@ -16,6 +16,7 @@ class Login(QWidget):
 
     def __init__(self):
         super(Login,self).__init__()
+        data_initial = Create()
         self.setFixedSize(600,400)
         self.setWindowTitle("登录")
         self.set_ui()

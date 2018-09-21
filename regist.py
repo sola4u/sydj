@@ -32,6 +32,8 @@ class Regist(QWidget):
         self.db = DataBase()
         self.db.cur.execute("select a.*,b.* from user as a, hospital as b where a.hospital_id = b.id and a.username = '%s'"%(self.user))
         rslt = self.db.cur.fetchall()[0]
+        self.db.cur.execute("select * from race")
+        race_rslt = self.db.cur.fetchall()
         self.db.cur.execute("select name from hospital")
         hospital_rslt = self.db.cur.fetchall()
         self.db.con.close()
@@ -81,14 +83,8 @@ class Regist(QWidget):
         self.race_label = QLabel('民族')
         self.race = QComboBox()
         self.race.setEditable(True)
-        race_list = ['汉族','蒙古族','回族','藏族','维吾尔族','苗族','彝族','壮族','布依族','朝鲜族',
-                    '满族','侗族','瑶族','白族','土家族','哈尼族','哈萨克族','傣族','黎族','傈傈族',
-                    '佤族','畲族','高山族','拉祜族','水族','东乡族','纳西族','景颇族','柯尔克孜族','土族',
-                    '达斡尔族','仫佬族','羌族','布朗族','撒拉族','毛南族','仡佬族','锡伯族','阿昌族','普米族',
-                    '怒族','乌孜别克族','俄罗斯族','鄂温克族','德昂族','保安族','裕固族','京族','塔塔尔族','独龙族',
-                    '鄂伦春族','赫哲族','门巴族','珞巴族','基诺族','外国血统中国籍人士','其他','不详']
-        for i in race_list:
-            self.race.addItem(i)
+        for i in race_rslt:
+            self.race.addItem(i[1])
 
         self.nation_label = QLabel('国家或地区')
         self.nation = QLineEdit("中国")
@@ -163,17 +159,17 @@ class Regist(QWidget):
         self.company = QLineEdit()
         self.company.setClearButtonEnabled(True)
 
-        a = Address()
-        a.location_label.setText("户籍详细地址")
-        a.id_label.setText("户籍地址国标")
-        self.address_now = a.location
-        self.code_now = a.id
+        address_a = Address()
+        address_a.location_label.setText("户籍详细地址")
+        address_a.id_label.setText("户籍地址国标")
+        self.address_now = address_a.location
+        self.code_now = address_a.id
 
-        b = Address()
-        b.location_label.setText("死者生前详细地址")
-        b.id_label.setText("死者生前常住地址国标")
-        self.address_birth= b.location
-        self.code_birth= b.id
+        address_b = Address()
+        address_b.location_label.setText("死者生前详细地址")
+        address_b.id_label.setText("死者生前常住地址国标")
+        self.address_birth= address_b.location
+        self.code_birth= address_b.id
 
         self.family_label = QLabel("可联系的家属姓名")
         self.family = QLineEdit()
@@ -316,7 +312,6 @@ class Regist(QWidget):
         self.bnt_layout.addWidget(self.back_bnt)
         self.bnt_layout2.setLayout(self.bnt_layout)
 
-
         self.layout.addWidget(self.report_distinct_label,1,0)
         self.layout.addWidget(self.report_distinct,1,1)
         self.layout.addWidget(self.report_depart_label,1,2)
@@ -355,8 +350,8 @@ class Regist(QWidget):
         self.layout.addWidget(self.death_location,15,1)
         self.layout.addWidget(self.company_label,16,0)
         self.layout.addWidget(self.company,16,1)
-        self.layout.addWidget(a,17,0,1,4)
-        self.layout.addWidget(b,18,0,1,4)
+        self.layout.addWidget(address_a,17,0,1,4)
+        self.layout.addWidget(address_b,18,0,1,4)
         self.layout.addWidget(self.family_label,19,0)
         self.layout.addWidget(self.family,19,1)
         self.layout.addWidget(self.family_tel_label,20,0)
@@ -415,10 +410,6 @@ class Regist(QWidget):
         self.layout.addWidget(self.research_date,47,1)
         self.layout.addWidget(self.research_date_choose,47,2)
 
-
-
-        # self.setLayout(self.layout)
-
         self.scroll = QScrollArea(self)
         self.scroll.setAutoFillBackground(True)
         self.scroll.setMinimumSize(800,600)
@@ -437,26 +428,11 @@ class Regist(QWidget):
         self.layout3.addWidget(self.bnt_layout2)
 
         self.setLayout(self.layout3)
-        # self.setLayout(self.scroll)
-
-
 
     def back_click(self):
         self.close()
         self.listwindow = ListWindow(self.user)
         self.listwindow.show()
-
-    def save_record(self):
-        bianhao_list = self.get_bianhao()
-        bianhao = str(bianhao_list[0]) + str(bianhao_list[1]) + str(bianhao_list[2]).zfill(4)
-
-        self.db = DataBase()
-        self.db.cur.execute("update bianhao set last_year = %d, last_number = %d where hospital_id = %d"%(bianhao_list[1], bianhao_list[2], bianhao_list[3]))
-        data = {
-
-        }
-        self.db.con.commit()
-        self.db.con.close()
 
     def get_bianhao(self):
         self.db = DataBase()
@@ -476,11 +452,8 @@ class Regist(QWidget):
         self.db.con.close()
         return [depart_code, year, last_number, hospital_id]
 
-
     def print_record(self):
-        self.a = QWebEngineView()
-        self.a.load(QUrl('https://baidu.com'))
-        self.a.show()
+        print(self.race.currentIndex())
 
     def add_record(self):
         pass
@@ -488,6 +461,7 @@ class Regist(QWidget):
     def gender_male(self, state):
         if state == Qt.Checked:
             self.gender.setText("男性")
+            self.gender_id = 1
             self.female.setChecked(False)
             self.unkonwn_gender.setChecked(False)
             self.unscript_gender.setChecked(False)
@@ -495,6 +469,7 @@ class Regist(QWidget):
     def gender_female(self, state):
         if state == Qt.Checked:
             self.gender.setText("女性")
+            self.gender_id = 2
             self.male.setChecked(False)
             self.unkonwn_gender.setChecked(False)
             self.unscript_gender.setChecked(False)
@@ -502,6 +477,7 @@ class Regist(QWidget):
     def gender_unkonwn(self, state):
         if state == Qt.Checked:
             self.gender.setText("未知的性别")
+            self.gender_id = 3
             self.male.setChecked(False)
             self.female.setChecked(False)
             self.unscript_gender.setChecked(False)
@@ -509,6 +485,7 @@ class Regist(QWidget):
     def gender_unscript(self, state):
         if state == Qt.Checked:
             self.gender.setText("未说明的性别")
+            self.gender_id = 4
             self.male.setChecked(False)
             self.unkonwn_gender.setChecked(False)
             self.female.setChecked(False)
@@ -578,3 +555,19 @@ class Regist(QWidget):
 
     def input_researchday(self, date):
         self.research_date.setDate(date)
+
+    def save_record(self):
+        bianhao_list = self.get_bianhao()
+        bianhao = str(bianhao_list[0]) + str(bianhao_list[1]) + str(bianhao_list[2]).zfill(4)
+
+        self.db = DataBase()
+        self.db.cur.execute("update bianhao set last_year = %d, last_number = %d where hospital_id = %d"%(bianhao_list[1], bianhao_list[2], bianhao_list[3]))
+        data = {
+
+        }
+        insert_sql = '''INSERT INTO death_info VALUES (
+
+                );
+               '''
+        self.db.con.commit()
+        self.db.con.close()
