@@ -236,7 +236,7 @@ class User(QWidget):
 
 class User_Info(User):
 
-    def __init__(self,user):
+    def __init__(self,user,upper_level=0):
         super(User_Info,self).__init__()
         self.setFixedSize(600, 400)
         self.db = DataBase()
@@ -255,19 +255,18 @@ class User_Info(User):
         self.hospital.setCurrentText(rslt_list[7])
         self.reporter.setText(rslt_list[11])
         self.username.setStyleSheet('background-color:#f0f0f0;')
+        self.upper_level = upper_level
 
+        if rslt_list[4] == 9:
+            self.code.setReadOnly(False)
+            self.reporter.setReadOnly(False)
+            self.account_level = 1
         if rslt_list[4] < 9:
             self.hospital_manage_bnt.setVisible(False)
             self.hospital.currentTextChanged.disconnect(self.hospital_info_autuofill)
+            self.account_level = 0
         if rslt_list[4] < 1:
             self.user_manage_bnt.setVisible(False)
-        if rslt_list[4] == 9:
-            self.accout_level = 1
-            self.code.setReadOnly(False)
-            self.reporter.setReadOnly(False)
-        else:
-            self.accout_level = 0
-
 
     def confirm_click(self):
 
@@ -276,12 +275,20 @@ class User_Info(User):
         h5.update(self.password.text().encode(encoding='utf-8'))
 
         if self.confirm_bnt.text() == "确定(ENT)":
-                if self.password.text() == '':
-                    sql = 'update user set  nickname="%s",hospital_id = "%s" where username = "%s"'%(self.name.text(),self.hospital_id, self.user)
-                elif self.password.text() == self.password2.text():
-                    sql = 'update user set password = "%s", nickname="%s",hospital_id = "%s" where username = "%s"'%(h5.hexdigest(), self.name.text(), self.hospital_id,self.user)
+                if  self.upper_level == 9:
+                    if self.password.text() == '':
+                        sql = 'update user set  username = "%s", nickname="%s",hospital_id = "%s" where username = "%s"'%(self.username.text(),self.name.text(),self.hospital_id, self.user)
+                    elif self.password.text() == self.password2.text():
+                        sql = 'update user set username = "%s" password = "%s", nickname="%s",hospital_id = "%s" where username = "%s"'%(self.username.text(),h5.hexdigest(), self.name.text(), self.hospital_id,self.user)
+                    else:
+                        self.message.setText('两次输入密码不一致')
                 else:
-                    self.message.setText('两次输入密码不一致')
+                    if self.password.text() == '':
+                        sql = 'update user set  nickname="%s",hospital_id = "%s" where username = "%s"'%(self.name.text(),self.hospital_id, self.user)
+                    elif self.password.text() == self.password2.text():
+                        sql = 'update user set  password = "%s", nickname="%s",hospital_id = "%s" where username = "%s"'%(h5.hexdigest(), self.name.text(), self.hospital_id,self.user)
+                    else:
+                        self.message.setText('两次输入密码不一致')
                 self.db.cur.execute(sql)
                 msg = QMessageBox.information(self,'提示','确认修改',QMessageBox.Yes, QMessageBox.Yes)
                 if msg == QMessageBox.Yes:
@@ -299,7 +306,7 @@ class User_Info(User):
                     self.message.setText("用户已经存在")
                 else:
                     sql = '''insert into user (username, nickname,password,hospital_id,account_level,is_delete)
-                        values ("{0}","{1}","{2}",{3},{4},{5})'''.format(self.username.text(), self.name.text(),h5.hexdigest(),self.hospital_id,self.accout_level,0)
+                        values ("{0}","{1}","{2}",{3},{4},{5})'''.format(self.username.text(), self.name.text(),h5.hexdigest(),self.hospital_id,self.account_level,0)
                     self.db.cur.execute(sql)
                     msg = QMessageBox.information(self,'提示','确认修改',QMessageBox.Yes, QMessageBox.Yes)
                     if msg == QMessageBox.Yes:
@@ -418,13 +425,16 @@ class User_List(QWidget):
         self.a.show()
 
     def view_record(self, username):
-        self.a = User_Info(username)
+        self.a = User_Info(username,self.rslt[1])
         self.a.show()
         self.a.username.setReadOnly(False)
         self.a.user_manage_bnt.setVisible(False)
         self.a.cancel_bnt.clicked.disconnect(self.a.back_click)
         if self.rslt[1] == 9:
             self.a.hospital.currentTextChanged.connect(self.a.hospital_info_autuofill)
+            self.a.username.setStyleSheet('background-color:white;')
+        else:
+            self.a.username.setReadOnly(True)
         # self.a.cancel_bnt.clicked.connect(lambda:self.a.close())
         self.a.cancel_bnt.clicked.connect(self.view_close_click)
 

@@ -95,7 +95,6 @@ class Create():
                         code_now             int  not null,
                         address_birth        text not null,
                         code_birth           int  not null,
-                        death_location       text not null,
                         death_location_code  int  not null,
                         company              text,
                         death_date           int  not null,
@@ -133,23 +132,26 @@ class Create():
                         research_date        int,
                         primary key (serial_number)
                );'''
-        self.cur.execute(user_sql)
-        self.cur.execute(hospital_sql)
-        self.cur.execute(bianhao_sql)
-        self.cur.execute(gender_sql)
-        self.cur.execute(occupation_sql)
-        self.cur.execute(race_sql)
-        self.cur.execute(marriage_sql)
-        self.cur.execute(education_sql)
-        self.cur.execute(death_point_sql)
-        self.cur.execute(diagnost_hospital_sql)
-        self.cur.execute(diagnost_method_sql)
-        self.cur.execute(death_info_sql)
-        rslt = self.cur.execute("select * from gender").fetchall()
-        if not rslt:
-            self.initial()
-        else:
-            pass
+        try:
+            self.cur.execute("select * from user")
+        except OperationalError:
+            self.cur.execute(user_sql)
+            self.cur.execute(hospital_sql)
+            self.cur.execute(bianhao_sql)
+            self.cur.execute(gender_sql)
+            self.cur.execute(occupation_sql)
+            self.cur.execute(race_sql)
+            self.cur.execute(marriage_sql)
+            self.cur.execute(education_sql)
+            self.cur.execute(death_point_sql)
+            self.cur.execute(diagnost_hospital_sql)
+            self.cur.execute(diagnost_method_sql)
+            self.cur.execute(death_info_sql)
+            rslt = self.cur.execute("select * from gender").fetchall()
+            if not rslt:
+                self.initial()
+            else:
+                pass
         self.con.close()
 
     def initial(self):

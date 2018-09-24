@@ -556,15 +556,43 @@ class Regist(QWidget):
     def input_researchday(self, date):
         self.research_date.setDate(date)
 
+    def change_date(self,pyqtdate):   # a pyqtdate style /yyyymmdd to time stamp
+        pydate = pyqtdate.date().toPyDate()
+        base_date = datetime.date(1970,1,1)
+        day_delta = pydate - base_date
+        days = day_delta.days
+        seconds = days*24*3600
+        return seconds
+
+    def change_time(self, time_text): # disease time to integer
+        try:
+            a = int(time_text)
+        except ValueError:
+            a = 0
+        return a
+
     def save_record(self):
         bianhao_list = self.get_bianhao()
         bianhao = str(bianhao_list[0]) + str(bianhao_list[1]) + str(bianhao_list[2]).zfill(4)
+        age = self.age.text() + self.age_unit.text()
 
         self.db = DataBase()
         self.db.cur.execute("update bianhao set last_year = %d, last_number = %d where hospital_id = %d"%(bianhao_list[1], bianhao_list[2], bianhao_list[3]))
-        data = {
-
-        }
+        data = (self.report_distinct_code.text(),self.report_department.text(), self.number.text(),bianhao,
+                self.name.text(),self.gender_id,self.race.currentIndex(),self.id_class.currentIndex(),
+                self.id.text(),self.change_date(self.birthday),age,self.marriage.currentIndex(),self.education.currentIndex(),
+                self.occupation.currentIndex(),self.address_now.text(),self.code_now.text(),self.address_birth.text(),
+                self.code_birth.text(),self.death_location.currentIndex(),self.company.text(),self.change_date(self.death_date),
+                self.family.text(),self.family_tel.text(),self.family_address.text(),self.disease_a.text(),self.change_time(self.disease_a_time.text()),
+                self.disease_a_time_unit.currentText(),self.disease_b.text(),self.change_time(self.disease_b_time.text()),self.disease_b_time_unit.currentText(),
+                self.disease_c.text(),self.change_time(self.disease_c_time.text()),self.disease_c_time_unit.currentText(),
+                self.disease_d.text(),self.change_time(self.disease_d_time.text()),self.disease_d_time_unit.currentText(),
+                self.death_reason.text(),self.diagnost_department_code.currentIndex(),self.diagnost_method_code.currentIndex(),
+                self.inhospital.text(),self.doctor.text(),self.change_date(self.regist_date),self.reporter.text(),
+                self.hospital.text(),self.backup.text(),self.research.text(),self.researcher.text(),self.relation.text(),
+                self.researcher_address.text(),self.death_reason2.text(),self.change_date(self.research_date)
+                )
+        print(data)
         insert_sql = '''INSERT INTO death_info VALUES (
 
                 );
