@@ -32,6 +32,7 @@ class Regist(QWidget):
         self.db = DataBase()
         self.db.cur.execute("select a.*,b.* from user as a, hospital as b where a.hospital_id = b.id and a.username = '%s'"%(self.user))
         rslt = self.db.cur.fetchall()[0]
+        self.hospital_id = rslt[3]
         self.db.cur.execute("select * from race")
         race_rslt = self.db.cur.fetchall()
         self.db.cur.execute("select name from hospital")
@@ -63,7 +64,8 @@ class Regist(QWidget):
         self.name = QLineEdit()
 
         self.gender_label = QLabel('性别')
-        self.gender = QLineEdit()
+        # self.gender = QLineEdit()
+        self.gender_id = QLineEdit()
         self.male = QCheckBox('男')
         self.male.stateChanged.connect(self.gender_male)
         self.female = QCheckBox('女')
@@ -103,7 +105,7 @@ class Regist(QWidget):
         self.id_label = QLabel('证件号码')
         self.id = QLineEdit()
         self.id.setClearButtonEnabled(True)
-        self.id_bnt = QPushButton('点击生成日期、年龄')
+        self.id_bnt = QPushButton('点击生成日期、性别')
         self.id_bnt.clicked.connect(self.id_to_date)
 
         self.birth_label = QLabel('出生日期')
@@ -116,6 +118,8 @@ class Regist(QWidget):
         self.age_label = QLabel("出生日期不详填年龄")
         self.age = QLineEdit()
         self.age_unit = QComboBox()
+        self.age_generate_bnt = QPushButton("点击生成年龄")
+        self.age_generate_bnt.clicked.connect(self.generate_age)
         self.age_unit.addItem("岁")
         self.age_unit.addItem('月')
         self.age_unit.addItem('天')
@@ -142,7 +146,6 @@ class Regist(QWidget):
             self.occupation.addItem(i)
 
         self.death_date_label = QLabel('死亡日期')
-        # self.death_date = QDateEdit()
         self.death_date = QDateTimeEdit()
         self.death_date_choose= QPushButton()
         self.death_date_choose.setStyleSheet('border:hidden;text-align:left')
@@ -334,18 +337,19 @@ class Regist(QWidget):
         self.layout.addWidget(self.birth_label,9,0)
         self.layout.addWidget(self.birthday,9,1)
         self.layout.addWidget(self.birth_date_choose,9,2)
-        self.layout.addWidget(self.age_label,10,0)
-        self.layout.addWidget(self.age,10,1)
-        self.layout.addWidget(self.age_unit,10,2)
-        self.layout.addWidget(self.marriage_label,11,0)
-        self.layout.addWidget(self.marriage,11,1)
-        self.layout.addWidget(self.education_label,12,0)
-        self.layout.addWidget(self.education,12,1)
-        self.layout.addWidget(self.occup_label,13,0)
-        self.layout.addWidget(self.occupation,13,1)
-        self.layout.addWidget(self.death_date_label,14,0)
-        self.layout.addWidget(self.death_date,14,1)
-        self.layout.addWidget(self.death_date_choose,14,2)
+        self.layout.addWidget(self.death_date_label,10,0)
+        self.layout.addWidget(self.death_date,10,1)
+        self.layout.addWidget(self.death_date_choose,10,2)
+        self.layout.addWidget(self.age_label,11,0)
+        self.layout.addWidget(self.age,11,1)
+        self.layout.addWidget(self.age_unit,11,2)
+        self.layout.addWidget(self.age_generate_bnt,11,3)
+        self.layout.addWidget(self.marriage_label,12,0)
+        self.layout.addWidget(self.marriage,12,1)
+        self.layout.addWidget(self.education_label,13,0)
+        self.layout.addWidget(self.education,13,1)
+        self.layout.addWidget(self.occup_label,14,0)
+        self.layout.addWidget(self.occupation,14,1)
         self.layout.addWidget(self.death_location_label,15,0)
         self.layout.addWidget(self.death_location,15,1)
         self.layout.addWidget(self.company_label,16,0)
@@ -453,39 +457,39 @@ class Regist(QWidget):
         return [depart_code, year, last_number, hospital_id]
 
     def print_record(self):
-        print(self.race.currentIndex())
+        print(self.report_department.currentText(), self.report_department.currentIndex())
 
     def add_record(self):
         pass
 
     def gender_male(self, state):
         if state == Qt.Checked:
-            self.gender.setText("男性")
-            self.gender_id = 1
+            # self.gender.setText("男性")
+            self.gender_id.setText('1')
             self.female.setChecked(False)
             self.unkonwn_gender.setChecked(False)
             self.unscript_gender.setChecked(False)
 
     def gender_female(self, state):
         if state == Qt.Checked:
-            self.gender.setText("女性")
-            self.gender_id = 2
+            # self.gender.setText("女性")
+            self.gender_id.setText('2')
             self.male.setChecked(False)
             self.unkonwn_gender.setChecked(False)
             self.unscript_gender.setChecked(False)
 
     def gender_unkonwn(self, state):
         if state == Qt.Checked:
-            self.gender.setText("未知的性别")
-            self.gender_id = 3
+            # self.gender.setText("未知的性别")
+            self.gender_id.setText('3')
             self.male.setChecked(False)
             self.female.setChecked(False)
             self.unscript_gender.setChecked(False)
 
     def gender_unscript(self, state):
         if state == Qt.Checked:
-            self.gender.setText("未说明的性别")
-            self.gender_id = 4
+            # self.gender.setText("未说明的性别")
+            self.gender_id.setText('4')
             self.male.setChecked(False)
             self.unkonwn_gender.setChecked(False)
             self.female.setChecked(False)
@@ -523,6 +527,16 @@ class Regist(QWidget):
                 self.id_bnt.setText('请点击')
         else:
             self.id_bnt.setText('未满18位')
+
+    def generate_age(self):
+        if self.death_date != '':
+            death_date = self.death_date.date().toPyDate()
+            birth_date = self.birthday.date().toPyDate()
+            date = death_date - birth_date
+            age = str(round(date.days/365.25))
+            self.age.setText(age)
+        else:
+            self.age_generate_bnt.setText("死亡日期未填写")
 
     def show_birth_cal(self):
         self.cal = Calendar()
@@ -574,12 +588,12 @@ class Regist(QWidget):
     def save_record(self):
         bianhao_list = self.get_bianhao()
         bianhao = str(bianhao_list[0]) + str(bianhao_list[1]) + str(bianhao_list[2]).zfill(4)
-        age = self.age.text() + self.age_unit.text()
+        age = self.age.text() + self.age_unit.currentText()
 
         self.db = DataBase()
         self.db.cur.execute("update bianhao set last_year = %d, last_number = %d where hospital_id = %d"%(bianhao_list[1], bianhao_list[2], bianhao_list[3]))
-        data = (self.report_distinct_code.text(),self.report_department.text(), self.number.text(),bianhao,
-                self.name.text(),self.gender_id,self.race.currentIndex(),self.id_class.currentIndex(),
+        data = (self.report_distinct_code,self.report_department.currentText(), self.number.text(),bianhao,
+                self.name.text(),self.gender_id.text(),self.race.currentIndex(),self.id_class.currentIndex(),
                 self.id.text(),self.change_date(self.birthday),age,self.marriage.currentIndex(),self.education.currentIndex(),
                 self.occupation.currentIndex(),self.address_now.text(),self.code_now.text(),self.address_birth.text(),
                 self.code_birth.text(),self.death_location.currentIndex(),self.company.text(),self.change_date(self.death_date),
@@ -587,9 +601,9 @@ class Regist(QWidget):
                 self.disease_a_time_unit.currentText(),self.disease_b.text(),self.change_time(self.disease_b_time.text()),self.disease_b_time_unit.currentText(),
                 self.disease_c.text(),self.change_time(self.disease_c_time.text()),self.disease_c_time_unit.currentText(),
                 self.disease_d.text(),self.change_time(self.disease_d_time.text()),self.disease_d_time_unit.currentText(),
-                self.death_reason.text(),self.diagnost_department_code.currentIndex(),self.diagnost_method_code.currentIndex(),
-                self.inhospital.text(),self.doctor.text(),self.change_date(self.regist_date),self.reporter.text(),
-                self.hospital.text(),self.backup.text(),self.research.text(),self.researcher.text(),self.relation.text(),
+                self.death_reason.text(),self.diagnost_department.currentIndex(),self.diagnost_method.currentIndex(),
+                self.inhospital.text(),self.doctor.text(),self.change_date(self.regist_date),self.reporter.text(),self.hospital_id,
+                self.backup.text(),self.research.toPlainText(),self.researcher.text(),self.relation.text(),
                 self.researcher_address.text(),self.death_reason2.text(),self.change_date(self.research_date)
                 )
         print(data)

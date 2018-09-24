@@ -121,8 +121,6 @@ class Create():
                         doctor               text,
                         regist_date          int,
                         reporter             text,
-                        hospital             text,
-                        hospital_code        text,
                         backup               text,
                         research             text,
                         researcher           text,
