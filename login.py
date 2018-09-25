@@ -10,6 +10,7 @@ import sys
 import datetime
 from data import *
 from regist import *
+from query import *
 
 
 class Login(QWidget):
@@ -103,7 +104,9 @@ class ListWindow(QWidget):
         self.window.show()
 
     def query_window(self):
-        pass
+        self.close()
+        self.window = QueryWindow(self.user)
+        self.window.show()
 
     def user_info_window(self):
         self.close()
@@ -384,6 +387,7 @@ class User_List(QWidget):
         self.del_bnt.clicked.connect(lambda:self.del_record(username))
         self.regret_bnt.clicked.connect(lambda:self.regret_record(username))
 
+
         self.layout = QHBoxLayout()
         self.widget = QWidget()
 
@@ -633,7 +637,7 @@ class Hospital_Info(QWidget):
                 QMessageBox.warning(self,'tips','用户已存在',QMessageBox.Yes,QMessageBox.Yes)
             else:
                 sql1 = 'insert into hospital values ({0},"{1}",{2},"{3}",{4},"{5}")'.format(int(self.id.text()), self.name.text(),int(self.code.text()),self.depart_code.text(),0,self.reporter.text())
-                sql2 = 'insert into bianhao values ({0},{1},{2},{3})'.format(int(self.id.text()),'1',datetime.datetime.now().year,1)
+                sql2 = 'insert into bianhao values ({0},{1},{2},{3})'.format(int(self.id.text()),'1',datetime.datetime.now().year,0)
                 self.db.cur.execute(sql1)
                 self.db.cur.execute(sql2)
                 msg = QMessageBox.information(self, "tips",'确认提交',QMessageBox.Yes, QMessageBox.No)
