@@ -77,6 +77,7 @@ class Create():
                         primary key (diagnost_method_serial)
                );'''
         death_info_sql = '''CREATE  TABLE IF NOT EXISTS death_info (
+                        is_selected          int,
                         report_distinct_code text not null,
                         report_department    text not null,
                         serial_number        text not null,
@@ -128,6 +129,7 @@ class Create():
                         researcher_address   text,
                         death_reason2        text,
                         research_date        int,
+                        is_delete            int,
                         primary key (serial_number)
                );'''
         try:

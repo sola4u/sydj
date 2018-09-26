@@ -594,7 +594,7 @@ class Regist(QWidget):
         age = self.age.text() + self.age_unit.currentText()
 
         self.db = DataBase()
-        data = (self.report_distinct_code,self.report_department.currentText(), self.number2,bianhao,
+        data = (0,self.report_distinct_code,self.report_department.currentText(), self.number2,bianhao,
                 self.name.text(),self.gender_id.text(),self.race.currentIndex(),self.id_class.currentIndex(),
                 self.id.text(),self.change_date(self.birthday),age,self.marriage.currentIndex(),self.education.currentIndex(),
                 self.occupation.currentIndex(),self.address_now.text(),self.code_now.text(),self.address_birth.text(),
@@ -606,9 +606,9 @@ class Regist(QWidget):
                 self.death_reason.text(),self.diagnost_department.currentIndex(),self.diagnost_method.currentIndex(),
                 self.inhospital.text(),self.doctor.text(),self.change_date(self.regist_date),self.reporter.text(),self.hospital_id,
                 self.backup.text(),self.research.toPlainText(),self.researcher.text(),self.relation.text(),
-                self.researcher_address.text(),self.death_reason2.text(),self.change_date(self.research_date)
+                self.researcher_address.text(),self.death_reason2.text(),self.change_date(self.research_date),0
                 )
-        insert_sql = '''INSERT INTO death_info VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,
+        insert_sql = '''INSERT INTO death_info VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,
                 ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);
                '''
         update_sql = '''
@@ -622,3 +622,8 @@ class Regist(QWidget):
             print(self.number2)
         self.db.con.commit()
         self.db.con.close()
+
+class PrintWindow(QWidget):
+
+    def __init__(self, user):
+        super(PrintWindow, self).__init__()

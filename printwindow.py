@@ -11,3 +11,9 @@ from address import *
 from calendar import *
 from login import *
 import address_dic
+
+
+class PrintWindow(QWidget):
+
+    def __init__(self,id):
+        super(PrintWindow, self).__init__()
