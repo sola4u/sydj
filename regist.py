@@ -606,7 +606,7 @@ class Regist(QWidget):
                 self.death_reason.text(),self.diagnost_department.currentIndex(),self.diagnost_method.currentIndex(),
                 self.inhospital.text(),self.doctor.text(),self.change_date(self.regist_date),self.reporter.text(),self.hospital_id,
                 self.backup.text(),self.research.toPlainText(),self.researcher.text(),self.relation.text(),
-                self.researcher_address.text(),self.death_reason2.text(),self.change_date(self.research_date),0
+                self.researcher_address.text(),self.death_reason2.text(),self.change_date(self.research_date),0,0
                 )
         insert_sql = '''INSERT INTO death_info VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,
                 ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);

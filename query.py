@@ -10,6 +10,7 @@ from data import *
 from calendar import *
 from printwindow import *
 from math import ceil
+from . import regist
 
 class QueryWindow(QWidget):
 
@@ -52,8 +53,8 @@ class QueryWindow(QWidget):
         for i in hospital_list:
             self.department.addItem(i)
         self.all_record = QRadioButton("所有记录")
-        self.all_record.setChecked(True)
         self.unreport_report = QRadioButton("未上报")
+        self.unreport_record.setChecked(True)
         self.undelete_report = QRadioButton("所有记录(含删除)")
         self.by_report_date = QRadioButton("按报告日期")
         self.by_report_date.setChecked(True)
@@ -147,16 +148,17 @@ class QueryWindow(QWidget):
             name_sql = ' and name like "%s"'%(name_text)
 
         if self.all_record.isChecked():
-            is_deleted_sql = ''
+            is_deleted_sql = 'and is_deleted = 0'
+        elif self.undelete_report.isChecked():
+            is_deleted_sql = 'and is_deleted < 2 '
         else:
-            is_deleted_sql = 'and is_deleted = 0 '
-        if self.death_date.isChecked():
+            is_deleted_sql = 'is_reported = 0'
+        if self.by_death_date.isChecked():
             date_sql = 'deathdate'
         else:
             date_sql = 'regist_date'
-        a = RegistWindow()
-        begin_date_interge = a.change_date(self.begin_date)
-        end_date_interge = a.change_date(self.end_date)
+        begin_date_interge = self.change_date(self.begin_date)
+        end_date_interge = self.change_date(self.end_date)
         sql = '''
             select serialnumber,name,id,gender,birthday,address,deathdate,disease,regist_date,is_deleted from base where date2 between %d and %d
             '''%(begin_date_interge,end_date_interge)
@@ -307,3 +309,11 @@ class QueryWindow(QWidget):
 
     def input_end_date(self, date):
         self.end_date.setDate(date)
+
+    def change_date(self,pyqtdate):   # a pyqtdate style /yyyymmdd to time stamp
+        pydate = pyqtdate.date().toPyDate()
+        base_date = datetime.date(1970,1,1)
+        day_delta = pydate - base_date
+        days = day_delta.days
+        seconds = days*24*3600
+        return seconds

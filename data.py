@@ -129,7 +129,8 @@ class Create():
                         researcher_address   text,
                         death_reason2        text,
                         research_date        int,
-                        is_delete            int,
+                        is_deleted           int,
+                        is_reported          int,
                         primary key (serial_number)
                );'''
         try:
