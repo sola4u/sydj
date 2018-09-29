@@ -10,7 +10,7 @@ from data import *
 from calendar import *
 from printwindow import *
 from math import ceil
-from . import regist
+from regist import *
 
 class QueryWindow(QWidget):
 
@@ -24,10 +24,10 @@ class QueryWindow(QWidget):
 
     def set_ui(self):
         self.db = DataBase()
-        # self.db.cur.execute("select hospital_id from user where username = '%s'"%(self.user))
-        # hospital_id = self.db.cur.fetchone()[0]
-        # # # # self.db.cur.execute("select count(*) from death_info where hospital_code = '%s'"%(hospital_id))
-        # # # rslt = self.db.cur.fetchone()
+        self.db.cur.execute("select hospital_id from user where username = '%s'"%(self.user))
+        hospital_id = self.db.cur.fetchone()[0]
+        # self.db.cur.execute("select count(*) from death_info where hospital_code = '%s'"%(hospital_id))
+        # rslt = self.db.cur.fetchone()
         # # amount = rslt[0]
         # pages = ceil(amount / 20)
         self.db.cur.execute("select name from hospital")
@@ -44,6 +44,7 @@ class QueryWindow(QWidget):
         self.begin_date_bnt.clicked.connect(self.begin_date_choose)
         self.end_date_label = QLabel("截止日期")
         self.end_date = QDateEdit()
+        self.end_date.setDate(QDate.currentDate())
         self.end_date_bnt = QPushButton()
         self.end_date_bnt.setStyleSheet("border:hidden;")
         self.end_date_bnt.setIcon(QIcon('cal2.png'))
@@ -53,9 +54,9 @@ class QueryWindow(QWidget):
         for i in hospital_list:
             self.department.addItem(i)
         self.all_record = QRadioButton("所有记录")
-        self.unreport_report = QRadioButton("未上报")
-        self.unreport_record.setChecked(True)
-        self.undelete_report = QRadioButton("所有记录(含删除)")
+        self.unreported_record= QRadioButton("未上报")
+        self.unreported_record.setChecked(True)
+        self.undeleted_record= QRadioButton("所有记录(含删除)")
         self.by_report_date = QRadioButton("按报告日期")
         self.by_report_date.setChecked(True)
         self.by_death_date = QRadioButton("按死亡日期")
@@ -65,7 +66,7 @@ class QueryWindow(QWidget):
         self.export_bnt = QPushButton("导出Excel")
         self.close_bnt = QPushButton("关闭")
         self.query_bnt.clicked.connect(lambda:self.query_record())
-        self.requery_bnt.clicked.connect(self.requery)
+        self.requery_bnt.clicked.connect(self.clear_click)
         self.export_bnt.clicked.connect(self.export_record)
         self.close_bnt.clicked.connect(self.close_window)
         self.query_bnt.setStyleSheet("background-color:green;border:hidden;color:white;text-align:center;width:30px;height:50px;")
@@ -82,12 +83,18 @@ class QueryWindow(QWidget):
         self.next_page.clicked.connect(self.to_next_page)
 
         self.table = QTableWidget(20,12)
+        # self.table.resizeColumnToContents(i)
+        self.table.setColumnWidth(1,100)
+        self.table.setColumnWidth(2,40)
+        self.table.setColumnWidth(3,150)
+        self.table.setColumnWidth(5,250)
+        self.table.setColumnWidth(11,150)
 
         self.choose_record_layout = QHBoxLayout()
         self.choose_date_layout = QHBoxLayout()
         self.choose_record_layout.addWidget(self.all_record)
-        self.choose_record_layout.addWidget(self.unreport_report)
-        self.choose_record_layout.addWidget(self.undelete_report)
+        self.choose_record_layout.addWidget(self.unreported_record)
+        self.choose_record_layout.addWidget(self.undeleted_record)
         self.choose_date_layout.addWidget(self.by_report_date)
         self.choose_date_layout.addWidget(self.by_death_date)
         self.choose_record_layout2 = QWidget()
@@ -137,55 +144,70 @@ class QueryWindow(QWidget):
 
         self.setLayout(self.main_layout)
 
-    def query_click(self,start = 0, numbers = 20):
+    def query_record(self,start = 0, numbers = 20):
         self.db = DataBase()
+        self.db.cur.execute('select a.account_level, b.name from user as a, hospital as b where a.hospital_id = b.id and a.username = "%s"'%(self.user))
+        rslt = self.db.cur.fetchone()
+        if rslt[0] == 9:
+            if self.department.currentText() == 'admin':
+                department_sql = ''
+            else:
+                department_sql = ' and death_info.report_department = "%s"'%(self.department.currentText())
+        else:
+            department_sql = ' and death_info.report_department = "%s"'%(rslt[1])
+
         self.numbers =  numbers
         self.start = start
         if self.name.text() == '':
-            name_sql = ' and name like "%"'
+            name_sql = ' and death_info.name like "%"'
         else:
             name_text = '%' + self.name.text() + '%'
-            name_sql = ' and name like "%s"'%(name_text)
+            name_sql = ' and death_info.name like "%s"'%(name_text)
 
         if self.all_record.isChecked():
-            is_deleted_sql = 'and is_deleted = 0'
-        elif self.undelete_report.isChecked():
-            is_deleted_sql = 'and is_deleted < 2 '
+            is_deleted_sql = ' and death_info.is_deleted = 0'
+        elif self.undeleted_record.isChecked():
+            is_deleted_sql = ' and death_info.is_deleted < 2 '
         else:
-            is_deleted_sql = 'is_reported = 0'
+            is_deleted_sql = ' and death_info.is_reported = 0 and death_info.is_deleted = 0'
         if self.by_death_date.isChecked():
-            date_sql = 'deathdate'
+            date_sql = 'death_info.death_date'
         else:
-            date_sql = 'regist_date'
+            date_sql = 'death_info.regist_date'
         begin_date_interge = self.change_date(self.begin_date)
         end_date_interge = self.change_date(self.end_date)
         sql = '''
-            select serialnumber,name,id,gender,birthday,address,deathdate,disease,regist_date,is_deleted from base where date2 between %d and %d
-            '''%(begin_date_interge,end_date_interge)
-        number_sql = 'select count(*) from base where date2 between %d and %d '%(begin_date_interge,end_date_interge)
-        if self.id.text() != "":
-            sql2 = 'select serialnumber,name,id,gender,birthday,address,deathdate,disease,regist_date,is_deleted from base where id = %s limit %d offset %d'%(self.id.text(),self.numbers, self.start)
-            sql3 = 'select count(*) from base where id = %s '%(self.id.text())
-        else:
-            sql2 = sql.replace('date2',date_sql) + is_deleted_sql + name_sql + '  limit %d offset %d'%(self.numbers,self.start)
-            sql3 = number_sql.replace('date2',date_sql) + is_deleted_sql + name_sql
+            select death_info.serial_number,death_info.name,gender.gender_name,death_info.id,death_info.birthday,death_info.address_now,death_info.death_date,
+            death_info.disease_a,
+            death_info.doctor, death_info.regist_date, death_info.report_department,death_info.is_deleted, death_info.is_reported from death_info,gender
+            where death_info.gender_code = gender.gender_serial and date_conditon between %d and %d
+        '''%(begin_date_interge,end_date_interge)
+
+        number_sql = 'select count(*) from death_info where date_conditon between %d and %d '%(begin_date_interge,end_date_interge)
+        # if self.id.text() != "":
+            # sql2 = 'select serialnumber,name,id,gender,birthday,address,deathdate,disease,regist_date,is_deleted from base where id = %s limit %d offset %d'%(self.id.text(),self.numbers, self.start)
+            # sql3 = 'select count(*) from base where id = %s '%(self.id.text())
+        # else:
+        sql2 = sql.replace('date_conditon',date_sql) +department_sql + is_deleted_sql + name_sql + '  limit %d offset %d'%(self.numbers,self.start)
+        sql3 = number_sql.replace('date_conditon',date_sql) +department_sql + is_deleted_sql + name_sql         # sql3 = number_sql.replace('date2',date_sql) + is_deleted_sql + name_sql
         rlst_exec = self.db.cur.execute(sql2)
         rslt =  rlst_exec.fetchall()
-        count = self.db.cur.execute(sql3).fetchone()[0]
+        count1 = self.db.cur.execute(sql3).fetchone()
+        count = count1[0]
         pages = ceil(count/self.numbers)
-        pages_text = '共' + str(count) +'条 ' + str(pages) + '页，第' + str(self.this_page) +'页'
-        self.page.setText(pages_text)
+        pages_text = '共' + str(count) +'条 ' + str(pages) + '页，第' + str(self.present_page) +'页'
+        self.page_info.setText(pages_text)
         self.max_page = pages
         k = 0
         self.table.clear()
-        self.table.setHorizontalHeaderLabels(['编号','姓名','身份证号码','性别','出生日期','常住地址','死亡日期','死亡原因','登记日期','是否报告','操作'])
+        self.table.setHorizontalHeaderLabels(['编号','姓名','性别','证件号码','出生日期','现住址','死亡日期','直接死因','报卡医生','报告日期','报告单位','操作'])
         for i in rslt:
-            for j in range(9):
-                if j in [4,6,8]:
+            for j in range(11):
+                if j in [4,6,9]:
                     self.table.setItem(k,j,QTableWidgetItem(self.to_date(i[j])))
                 else:
-                    self.table.setItem(k,j,QTableWidgetItem(i[j]))
-            self.table.setCellWidget(k,10,self.button_row(i[0]))
+                    self.table.setItem(k,j,QTableWidgetItem(str(i[j])))
+            self.table.setCellWidget(k,11,self.button_row(i[0]))
             k += 1
         self.db.con.close()
 
@@ -197,33 +219,42 @@ class QueryWindow(QWidget):
         self.del_bnt = QPushButton('删除')
         self.regret_bnt = QPushButton('恢复')
         self.print_bnt = QPushButton('打印')
+        self.report_bnt = QPushButton("上报")
 
         self.view_bnt.setStyleSheet('''text-align:center; background-color:green;border-style:outset;height:20px;color:white;''')
         self.del_bnt.setStyleSheet('''text-align:center;background-color: red;border-style:outset;height:20px;color:white;''')
         self.regret_bnt.setStyleSheet('''text-align:center;background-color: grey;border-style:outset;height:20px;color:white;''')
         self.print_bnt.setStyleSheet('''text-align:center;background-color: #660099;border-style:outset;height:20px;color:white;''')
+        self.report_bnt.setStyleSheet('''text-align:center;background-color:#1c86ee;border-style:outset;height:20px;color:white;''')
 
         self.hlayout = QHBoxLayout()
-        self.db.cur.execute('select * from death_info where serialnumber = %s'%(self.query_id))
+        self.db.cur.execute('select serial_number,is_deleted,is_reported from death_info where serial_number = "%s"'%(self.query_id))
         rslt = self.db.cur.fetchone()
         self.db.con.close()
-        if rslt[-1] == 1:
+        if rslt[-2] == 1:
             self.hlayout.addWidget(self.regret_bnt)
-        else:
+        elif rslt[-1] == 1:
             self.hlayout.addWidget(self.view_bnt)
             self.hlayout.addWidget(self.print_bnt)
             self.hlayout.addWidget(self.del_bnt)
-        self.view_bnt.clicked.connect(lambda:self.view_record(rslt[3]))
-        self.del_bnt.clicked.connect(lambda:self.del_record(rslt[3]))
-        self.regret_bnt.clicked.connect(lambda:self.regret_record(rslt[3]))
-        self.print_bnt.clicked.connect(lambda:self.print_record(rslt[3]))
+        else:
+            self.hlayout.addWidget(self.report_bnt)
+            self.hlayout.addWidget(self.view_bnt)
+            self.hlayout.addWidget(self.print_bnt)
+            self.hlayout.addWidget(self.del_bnt)
+
+        self.view_bnt.clicked.connect(lambda:self.view_record(rslt[0]))
+        self.del_bnt.clicked.connect(lambda:self.del_record(rslt[0]))
+        self.regret_bnt.clicked.connect(lambda:self.regret_record(rslt[0]))
+        self.print_bnt.clicked.connect(lambda:self.print_record(rslt[0]))
+        self.report_bnt.clicked.connect(lambda:self.report_record(rslt[0]))
         self.hlayout.setContentsMargins(5,2,5,2)
         self.widget.setLayout(self.hlayout)
         return self.widget
 
     def view_record(self,id):
         self.db = DataBase()
-        self.db.cur.execute('select * from base where serialnumber = %s'%(id))
+        self.db.cur.execute('select * from death_info where serial_number = %s'%(id))
         b = self.db.cur.fetchone()
         self.db.con.close()
         self.a = RegistWindow()
@@ -259,39 +290,70 @@ class QueryWindow(QWidget):
 
     def del_record(self, id):
         self.db = DataBase()
-        self.db.cur.execute('update base set is_deleted = 1 where serialnumber = %s'%(id))
+        self.db.cur.execute('update death_info set is_deleted = 1 where serial_number = %s'%(id))
         msg = QMessageBox.information(self,'提示','是否更改信息？',QMessageBox.Yes,QMessageBox.No)
         if msg == QMessageBox.Yes:
             self.db.con.commit()
         else:
             pass
         self.db.con.close()
-        self.query_click()
+        self.query_record()
 
     def regret_record(self, id):
         self.db = DataBase()
-        self.db.cur.execute('update base set is_deleted = 0 where serialnumber = %s'%(id))
+        self.db.cur.execute('update death_info set is_deleted = 0 where serial_number = %s'%(id))
         msg = QMessageBox.information(self,'提示','是否更改信息？',QMessageBox.Yes,QMessageBox.No)
         if msg == QMessageBox.Yes:
             self.db.con.commit()
         else:
             pass
         self.db.con.close()
-        self.query_click()
+        self.query_record()
 
     def print_record(self, id):
         self.window = PrintWindow(id)
         self.window.show()
 
+    def report_record(self, id):
+        self.db = DataBase()
+        self.db.cur.execute('update death_info set is_reported = 1 where serial_number = %s'%(id))
+        msg = QMessageBox.information(self,'提示','是否更改信息？',QMessageBox.Yes,QMessageBox.No)
+        if msg == QMessageBox.Yes:
+            self.db.con.commit()
+        else:
+            pass
+        self.db.con.close()
+        self.query_record()
+
+    def clear_click(self):
+        self.name.setText("")
+        self.begin_date.setDate(QDate(2000,1,1))
+        self.end_date.setDate(QDate.currentDate())
+
+    def export_record(self):
+        pass
 
     def close_window(self):
         self.close()
 
-    def to_pre_page(self):
-        pass
-
     def to_next_page(self):
-        pass
+        self.present_page += 1
+        if self.present_page < self.max_page:
+            a =  (self.present_page-1) * 20
+        else:
+            a = (self.max_page-1)*20
+            self.present_page = self.max_page
+        self.query_record(start=a)
+
+    def to_pre_page(self):
+        self.present_page -= 1
+        if self.present_page == 0:
+            self.present_page = 1
+        else:
+            self.present_page = self.present_page
+        a = (self.present_page-1)*20
+        self.query_record(start=a)
+
 
 
     def begin_date_choose(self):
@@ -317,3 +379,8 @@ class QueryWindow(QWidget):
         days = day_delta.days
         seconds = days*24*3600
         return seconds
+
+    def to_date(self,a):
+        b = datetime.datetime(1970, 1, 1) + datetime.timedelta(seconds=a)
+        c = b.strftime('%Y-%m-%d')
+        return c
