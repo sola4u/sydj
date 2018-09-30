@@ -53,19 +53,19 @@ class Regist(QWidget):
         for i in hospital_rslt:
             self.report_department.addItem(i[0])
 
-        self.number_label = QLabel('编号')
-        self.number = QLineEdit()
+        self.serial_number_label = QLabel('编号')
+        self.serial_number = QLineEdit()
         self.number2 = str(QDateTime.currentDateTime().toPyDateTime()).replace('/',
                             '').replace(' ','').replace(':','').replace('.','').replace('-','')[:-3]
-        self.number.setPlaceholderText(self.number2)
-        self.number.setReadOnly(True)
+        self.serial_number.setPlaceholderText(self.number2)
+        self.serial_number.setReadOnly(True)
 
         self.name_label = QLabel('姓名')
         self.name = QLineEdit()
 
         self.gender_label = QLabel('性别')
         # self.gender = QLineEdit()
-        self.gender_id = QLineEdit()
+        self.gender_code = QLineEdit()
         self.male = QCheckBox('男')
         self.male.stateChanged.connect(self.gender_male)
         self.female = QCheckBox('女')
@@ -319,8 +319,8 @@ class Regist(QWidget):
         self.layout.addWidget(self.report_distinct,1,1)
         self.layout.addWidget(self.report_depart_label,1,2)
         self.layout.addWidget(self.report_department,1,3)
-        self.layout.addWidget(self.number_label,2,0)
-        self.layout.addWidget(self.number,2,1)
+        self.layout.addWidget(self.serial_number_label,2,0)
+        self.layout.addWidget(self.serial_number,2,1)
         self.layout.addWidget(self.name_label,3,0)
         self.layout.addWidget(self.name,3,1)
         self.layout.addWidget(self.gender_label,4,0)
@@ -468,7 +468,7 @@ class Regist(QWidget):
     def gender_male(self, state):
         if state == Qt.Checked:
             # self.gender.setText("男性")
-            self.gender_id.setText('1')
+            self.gender_code.setText('1')
             self.female.setChecked(False)
             self.unkonwn_gender.setChecked(False)
             self.unscript_gender.setChecked(False)
@@ -476,7 +476,7 @@ class Regist(QWidget):
     def gender_female(self, state):
         if state == Qt.Checked:
             # self.gender.setText("女性")
-            self.gender_id.setText('2')
+            self.gender_code.setText('2')
             self.male.setChecked(False)
             self.unkonwn_gender.setChecked(False)
             self.unscript_gender.setChecked(False)
@@ -484,7 +484,7 @@ class Regist(QWidget):
     def gender_unkonwn(self, state):
         if state == Qt.Checked:
             # self.gender.setText("未知的性别")
-            self.gender_id.setText('3')
+            self.gender_code.setText('3')
             self.male.setChecked(False)
             self.female.setChecked(False)
             self.unscript_gender.setChecked(False)
@@ -492,7 +492,7 @@ class Regist(QWidget):
     def gender_unscript(self, state):
         if state == Qt.Checked:
             # self.gender.setText("未说明的性别")
-            self.gender_id.setText('4')
+            self.gender_code.setText('4')
             self.male.setChecked(False)
             self.unkonwn_gender.setChecked(False)
             self.female.setChecked(False)
@@ -595,7 +595,7 @@ class Regist(QWidget):
 
         self.db = DataBase()
         data = (0,self.report_distinct_code,self.report_department.currentText(), self.number2,bianhao,
-                self.name.text(),self.gender_id.text(),self.race.currentIndex(),self.id_class.currentIndex(),
+                self.name.text(),self.gender_code.text(),self.race.currentIndex(),self.id_class.currentIndex(),
                 self.id.text(),self.change_date(self.birthday),age,self.marriage.currentIndex(),self.education.currentIndex(),
                 self.occupation.currentIndex(),self.address_now.text(),self.code_now.text(),self.address_birth.text(),
                 self.code_birth.text(),self.death_location.currentIndex(),self.company.text(),self.change_date(self.death_date),
@@ -606,10 +606,10 @@ class Regist(QWidget):
                 self.death_reason.text(),self.diagnost_department.currentIndex(),self.diagnost_method.currentIndex(),
                 self.inhospital.text(),self.doctor.text(),self.change_date(self.regist_date),self.reporter.text(),self.hospital_id,
                 self.backup.text(),self.research.toPlainText(),self.researcher.text(),self.relation.text(),
-                self.researcher_address.text(),self.death_reason2.text(),self.change_date(self.research_date),0,0
+                self.researcher_address.text(),self.researcher_tel.text(),self.death_reason2.text(),self.change_date(self.research_date),0,0
                 )
         insert_sql = '''INSERT INTO death_info VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,
-                ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);
+                ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);
                '''
         update_sql = '''
             '''

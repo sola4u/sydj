@@ -10,7 +10,9 @@ from data import *
 from calendar import *
 from printwindow import *
 from math import ceil
+from address_dic import *
 from regist import *
+import regist
 
 class QueryWindow(QWidget):
 
@@ -255,37 +257,87 @@ class QueryWindow(QWidget):
     def view_record(self,id):
         self.db = DataBase()
         self.db.cur.execute('select * from death_info where serial_number = %s'%(id))
-        b = self.db.cur.fetchone()
+        rslt = self.db.cur.fetchone()
         self.db.con.close()
-        self.a = RegistWindow()
-        self.a.serialnumber.setText(b[0])
-        self.a.serialnumber.setReadOnly(True)
-        self.a.name.setText(b[1])
-        self.a.id.setText(b[2])
-        self.a.gender.setText(b[3])
-        if b[3] == '男':
+        self.a = regist.Regist(self.user)
+        self.a.save_bnt.setText("更新")
+        self.a.title.setText("查        看")
+
+        self.report_distinct_code = str(rslt[1])
+        report_distinct_name = address_dic.county_dic[self.report_distinct_code[:4]][self.report_distinct_code[:6]]
+        self.a.report_distinct.setText(report_distinct_name)
+
+        self.a.report_department.setCurrentIndex(int(rslt[45]))
+        self.a.serial_number.setText(rslt[3])
+        self.a.serial_number.setReadOnly(True)
+        self.a.name.setText(rslt[5])
+        self.a.gender_code.setText(str(rslt[6]))
+        if rslt[6] == 1:
             self.a.male.setChecked(True)
-        else:
+        elif rslt[6] == 2:
             self.a.female.setChecked(True)
-        self.a.race.setToolTip(b[4])
-        birthday_list = self.to_pydate(b[5])
+        elif rlst[6] == 3:
+            self.a.unkonwn_gender.setChecked(True)
+        else:
+            self.a.unscript_gender.setChecked(True)
+
+        self.a.race.setCurrentIndex(int(rslt[7]))
+        self.a.id_class.setCurrentIndex(int(rslt[8]))
+        self.a.id.setText(rslt[9])
+        birthday_list = self.to_pydate(rslt[10])
         self.a.birthday.setDate(QDate(birthday_list[0],birthday_list[1],birthday_list[2]))
-        self.a.address.setText(b[6])
-        deathdate_list = self.to_pydate(b[7])
-        self.a.deathdate.setDate(QDate(deathdate_list[0],deathdate_list[1],deathdate_list[2]))
-        self.a.disease.setText(b[8])
-        self.a.family.setText(b[9])
-        self.a.tel.setText(b[10])
-        regist_list = self.to_pydate(b[11])
+        death_date_list = self.to_pydate(rslt[21])
+        self.a.death_date.setDate(QDate(death_date_list[0],death_date_list[1],death_date_list[2]))
+        self.a.age.setText(rslt[11][:-1])
+        self.a.age_unit.setCurrentText(rslt[11][-1])
+        self.a.marriage.setCurrentIndex(int(rslt[12]))
+        self.a.education.setCurrentIndex(int(rslt[13]))
+        self.a.occupation.setCurrentIndex(int(rslt[14]))
+        self.a.address_now.setText(rslt[15])
+        self.a.code_now.setText(str(rslt[16]))
+        self.a.address_birth.setText(rslt[17])
+        self.a.code_birth.setText(str(rslt[18]))
+        self.a.death_location.setCurrentIndex(int(rslt[19]))
+        self.a.company.setText(rslt[20])
+        self.a.family.setText(rslt[22])
+        self.a.family_tel.setText(rslt[23])
+        self.a.family_address.setText(rslt[24])
+        self.a.disease_a.setText(rslt[25])
+        self.a.disease_a_time.setText(str(rslt[26]))
+        self.a.disease_a_time_unit.setCurrentText(rslt[27])
+        self.a.disease_b.setText(rslt[28])
+        self.a.disease_b_time.setText(str(rslt[29]))
+        self.a.disease_b_time_unit.setCurrentText(rslt[30])
+        self.a.disease_c.setText(rslt[31])
+        self.a.disease_c_time.setText(str(rslt[32]))
+        self.a.disease_c_time_unit.setCurrentText(rslt[33])
+        self.a.disease_d.setText(rslt[34])
+        self.a.disease_d_time.setText(str(rslt[35]))
+        self.a.disease_d_time_unit.setCurrentText(rslt[36])
+        self.a.other_disease.setText(rslt[37])
+        self.a.death_reason.setText(rslt[38])
+        self.a.diagnost_department.setCurrentIndex(int(rslt[39]))
+        self.a.diagnost_method.setCurrentIndex(int(rslt[40]))
+        self.a.inhospital.setText(rslt[41])
+        self.a.doctor.setText(rslt[42])
+        regist_list = self.to_pydate(rslt[43])
         self.a.regist_date.setDate(QDate(regist_list[0],regist_list[1],regist_list[2]))
-        self.a.serialnumber2 = b[0]
-        self.a.blank.setText("==========查  看==========")
+        self.a.reporter.setText(rslt[44])
+        self.a.reporter.setReadOnly(True)
+        self.a.backup.setText(rslt[46])
+        self.a.research.setText(rslt[47])
+        self.a.researcher.setText(rslt[48])
+        self.a.relation.setText(rslt[49])
+        self.a.researcher_address.setText(rslt[50])
+        self.a.researcher_tel.setText(rslt[51])
+        self.a.death_reason2.setText(rslt[52])
+        research_date_list = self.to_pydate(rslt[53])
+        self.a.research_date.setDate(QDate(research_date_list[0],research_date_list[1],research_date_list[2]))
+
         self.a.back_bnt.setText('关闭(ESC)')
         self.a.back_bnt.clicked.disconnect(self.a.back_click)
         self.a.back_bnt.clicked.connect(self.a.close)
-        self.a.save_bnt.clicked.disconnect(self.a.save_record)
-        self.a.save_bnt.clicked.connect(self.a.update_record)
-        self.a.save_bnt.setText('更新(F2)')
+        self.a.save_bnt.setText('更新(ENT)')
         self.a.show()
 
     def del_record(self, id):
@@ -384,3 +436,7 @@ class QueryWindow(QWidget):
         b = datetime.datetime(1970, 1, 1) + datetime.timedelta(seconds=a)
         c = b.strftime('%Y-%m-%d')
         return c
+
+    def to_pydate(self,a):
+        b = datetime.datetime(1970, 1, 1) + datetime.timedelta(seconds=a)
+        return [b.year, b.month, b.day]
