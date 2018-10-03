@@ -9,7 +9,9 @@ from PyQt5 import QtWidgets
 from address import *
 from calendar import *
 from login import *
+from data import *
 import address_dic
+import datetime
 
 class Regist(QWidget):
 
@@ -59,6 +61,9 @@ class Regist(QWidget):
                             '').replace(' ','').replace(':','').replace('.','').replace('-','')[:-3]
         self.serial_number.setPlaceholderText(self.number2)
         self.serial_number.setReadOnly(True)
+        self.bianhao_label = QLabel("死亡卡编号")
+        self.bianhao = QLineEdit()
+        self.bianhao.setReadOnly(True)
 
         self.name_label = QLabel('姓名')
         self.name = QLineEdit()
@@ -321,6 +326,8 @@ class Regist(QWidget):
         self.layout.addWidget(self.report_department,1,3)
         self.layout.addWidget(self.serial_number_label,2,0)
         self.layout.addWidget(self.serial_number,2,1)
+        self.layout.addWidget(self.bianhao_label,2,2)
+        self.layout.addWidget(self.bianhao,2,3)
         self.layout.addWidget(self.name_label,3,0)
         self.layout.addWidget(self.name,3,1)
         self.layout.addWidget(self.gender_label,4,0)
@@ -459,11 +466,6 @@ class Regist(QWidget):
     def print_record(self):
         print(self.report_department.currentText(), self.report_department.currentIndex())
 
-    def add_record(self):
-        self.save_record()
-        self.close()
-        self.new = Regist(self.user)
-        self.new.show()
 
     def gender_male(self, state):
         if state == Qt.Checked:
@@ -609,21 +611,117 @@ class Regist(QWidget):
                 self.researcher_address.text(),self.researcher_tel.text(),self.death_reason2.text(),self.change_date(self.research_date),0,0
                 )
         insert_sql = '''INSERT INTO death_info VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,
-                ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);
+                ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);
                '''
-        update_sql = '''
-            '''
+        for i in range(len(data)):
+            print(i, data[i],type(data[i])),
         if self.save_bnt.text() == "保存(ENT)":
             self.db.cur.execute("update bianhao set last_year = %d, last_number = %d where hospital_id = %d"%(bianhao_list[1], bianhao_list[2], bianhao_list[3]))
             self.db.cur.execute(insert_sql, data)
             self.save_bnt.setText("更新(ENT)")
+            self.save_bnt.clicked.disconnect(self.save_record)
+            self.save_bnt.clicked.connect(self.update_record)
         else:
-            # self.db.cur.execute(update_sql, data)
-            print(self.number2)
-        self.db.con.commit()
+            pass
+        msg = QMessageBox.information(self,'提示','是否更改信息？',QMessageBox.Yes,QMessageBox.No)
+        if msg == QMessageBox.Yes:
+            self.db.con.commit()
+        else:
+            pass
         self.db.con.close()
 
-class PrintWindow(QWidget):
+    def update_record(self):
+        age = self.age.text() + self.age_unit.currentText()
+        self.db = DataBase()
+        update_data = (self.bianhao.text(),
+                self.name.text(),self.gender_code.text(),self.race.currentIndex(),self.id_class.currentIndex(),
+                self.id.text(),self.change_date(self.birthday),age,self.marriage.currentIndex(),self.education.currentIndex(),
+                self.occupation.currentIndex(),self.address_now.text(),self.code_now.text(),self.address_birth.text(),
+                self.code_birth.text(),self.death_location.currentIndex(),self.company.text(),self.change_date(self.death_date),
+                self.family.text(),self.family_tel.text(),self.family_address.text(),self.disease_a.text(),self.change_time(self.disease_a_time.text()),
+                self.disease_a_time_unit.currentText(),self.disease_b.text(),self.change_time(self.disease_b_time.text()),self.disease_b_time_unit.currentText(),
+                self.disease_c.text(),self.change_time(self.disease_c_time.text()),self.disease_c_time_unit.currentText(),
+                self.disease_d.text(),self.change_time(self.disease_d_time.text()),self.disease_d_time_unit.currentText(),self.other_disease.text(),
+                self.death_reason.text(),self.diagnost_department.currentIndex(),self.diagnost_method.currentIndex(),
+                self.inhospital.text(),self.doctor.text(),self.change_date(self.regist_date),
+                self.backup.text(),self.research.toPlainText(),self.researcher.text(),self.relation.text(),
+                self.researcher_address.text(),self.researcher_tel.text(),self.death_reason2.text(),self.change_date(self.research_date)
+                )
+        for i in range(len(update_data)):
+            print(i,update_data[i]),
 
-    def __init__(self, user):
-        super(PrintWindow, self).__init__()
+        update_sql = '''UPDATE death_info SET bianhao = '{0}',
+            name = '{1}',
+            gender_code = {2},
+            race_code = {3},
+            id_class = '{4}',
+            id = '{5}',
+            birthday = {6},
+            age = '{7}',
+            marriage_code = {8},
+            education_code = {9},
+            occupation_code = {10},
+            address_now = '{11}',
+            code_now = {12},
+            address_birth = '{13}',
+            code_birth = {14},
+            death_location_code = {15},
+            company = '{16}',
+            death_date = {17},
+            family = '{18}',
+            family_tel = '{19}',
+            family_address = '{20}',
+            disease_a = '{21}',
+            disease_a_time = {22},
+            disease_a_time_unit = '{23}',
+            disease_b = '{24}',
+            disease_b_time = {25},
+            disease_b_time_unit = '{26}',
+            disease_c = '{27}',
+            disease_c_time = {28},
+            disease_c_time_unit = '{29}',
+            disease_d = '{30}',
+            disease_d_time = {31},
+            disease_d_time_unit = '{32}',
+            other_disease = '{33}',
+            death_reason = '{34}',
+            diagnost_department_code = {35},
+            diagnost_method_code = {36},
+            inhospital = '{37}',
+            doctor = '{38}',
+            regist_date = {39},
+            backup = '{40}',
+            research = '{41}',
+            researcher = '{42}',
+            relation = '{43}',
+            researcher_address = '{44}',
+            researcher_tel = '{45}',
+            death_reason2 = '{46}',
+            research_date = {47} where serial_number = "{48}"
+            '''.format(self.bianhao.text(),
+                self.name.text(),self.gender_code.text(),self.race.currentIndex(),self.id_class.currentIndex(),
+                self.id.text(),self.change_date(self.birthday),age,self.marriage.currentIndex(),self.education.currentIndex(),
+                self.occupation.currentIndex(),self.address_now.text(),self.code_now.text(),self.address_birth.text(),
+                self.code_birth.text(),self.death_location.currentIndex(),self.company.text(),self.change_date(self.death_date),
+                self.family.text(),self.family_tel.text(),self.family_address.text(),self.disease_a.text(),self.change_time(self.disease_a_time.text()),
+                self.disease_a_time_unit.currentText(),self.disease_b.text(),self.change_time(self.disease_b_time.text()),self.disease_b_time_unit.currentText(),
+                self.disease_c.text(),self.change_time(self.disease_c_time.text()),self.disease_c_time_unit.currentText(),
+                self.disease_d.text(),self.change_time(self.disease_d_time.text()),self.disease_d_time_unit.currentText(),self.other_disease.text(),
+                self.death_reason.text(),self.diagnost_department.currentIndex(),self.diagnost_method.currentIndex(),
+                self.inhospital.text(),self.doctor.text(),self.change_date(self.regist_date),
+                self.backup.text(),self.research.toPlainText(),self.researcher.text(),self.relation.text(),
+                self.researcher_address.text(),self.researcher_tel.text(),self.death_reason2.text(),self.change_date(self.research_date),self.serial_number.text()
+                )
+        self.db.cur.execute(update_sql)
+        msg = QMessageBox.information(self,'提示','是否更改信息？',QMessageBox.Yes,QMessageBox.No)
+        if msg == QMessageBox.Yes:
+            self.db.con.commit()
+        else:
+            pass
+        self.db.con.close()
+
+    def add_record(self):
+        self.save_record()
+        self.close()
+        self.new = Regist(self.user)
+        self.new.show()

@@ -11,8 +11,8 @@ from calendar import *
 from printwindow import *
 from math import ceil
 from address_dic import *
-from regist import *
 import regist
+import login
 
 class QueryWindow(QWidget):
 
@@ -270,6 +270,8 @@ class QueryWindow(QWidget):
         self.a.report_department.setCurrentIndex(int(rslt[45]))
         self.a.serial_number.setText(rslt[3])
         self.a.serial_number.setReadOnly(True)
+        self.a.bianhao.setText(rslt[4])
+        self.a.bianhao.setReadOnly(False)
         self.a.name.setText(rslt[5])
         self.a.gender_code.setText(str(rslt[6]))
         if rslt[6] == 1:
@@ -338,6 +340,8 @@ class QueryWindow(QWidget):
         self.a.back_bnt.clicked.disconnect(self.a.back_click)
         self.a.back_bnt.clicked.connect(self.a.close)
         self.a.save_bnt.setText('更新(ENT)')
+        self.a.save_bnt.clicked.disconnect(self.a.save_record)
+        self.a.save_bnt.clicked.connect(self.a.update_record)
         self.a.show()
 
     def del_record(self, id):
@@ -387,6 +391,8 @@ class QueryWindow(QWidget):
 
     def close_window(self):
         self.close()
+        self.listwindow = login.ListWindow(self.user)
+        self.listwindow.show()
 
     def to_next_page(self):
         self.present_page += 1
