@@ -31,12 +31,14 @@ class Regist(QWidget):
         self.layout.setColumnStretch(2,1)
         self.layout.setColumnStretch(3,2)
 
+        list_dic = Choice_Dic()
+
         self.db = DataBase()
         self.db.cur.execute("select a.*,b.* from user as a, hospital as b where a.hospital_id = b.id and a.username = '%s'"%(self.user))
         rslt = self.db.cur.fetchall()[0]
         self.hospital_id = rslt[3]
-        self.db.cur.execute("select * from race")
-        race_rslt = self.db.cur.fetchall()
+        # self.db.cur.execute("select * from race")
+        # race_rslt = self.db.cur.fetchall()
         self.db.cur.execute("select name from hospital")
         hospital_rslt = self.db.cur.fetchall()
         self.db.con.close()
@@ -90,6 +92,7 @@ class Regist(QWidget):
         self.race_label = QLabel('民族')
         self.race = QComboBox()
         self.race.setEditable(True)
+        race_rslt = list_dic.race_list
         for i in race_rslt:
             self.race.addItem(i[1])
 
@@ -98,14 +101,9 @@ class Regist(QWidget):
 
         self.id_class_label = QLabel("有效身份证件类别")
         self.id_class = QComboBox()
-        self.id_class.addItem("身份证")
-        self.id_class.addItem("户口簿")
-        self.id_class.addItem("护照")
-        self.id_class.addItem("军官证")
-        self.id_class.addItem("驾驶证")
-        self.id_class.addItem("港澳通行证")
-        self.id_class.addItem("台湾通行证")
-        self.id_class.addItem("其他法定有效证件")
+        id_class_list = list_dic.id_class_list
+        for i in id_class_list:
+            self.id_class.addItem(i)
 
         self.id_label = QLabel('证件号码')
         self.id = QLineEdit()
@@ -125,28 +123,25 @@ class Regist(QWidget):
         self.age_unit = QComboBox()
         self.age_generate_bnt = QPushButton("点击生成年龄")
         self.age_generate_bnt.clicked.connect(self.generate_age)
-        self.age_unit.addItem("岁")
-        self.age_unit.addItem('月')
-        self.age_unit.addItem('天')
+        age_unit_list = list_dic.age_unit
+        for i in age_unit_list:
+            self.age_unit.addItem(i)
 
         self.marriage_label = QLabel("婚姻状况")
         self.marriage = QComboBox()
-        self.marriage.addItem("未婚")
-        self.marriage.addItem("已婚")
-        self.marriage.addItem("丧偶")
-        self.marriage.addItem("离婚")
-        self.marriage.addItem("未说明")
+        marriage_list = list_dic.marriage_list
+        for i in marriage_list:
+            self.marriage.addItem(i)
 
         self.education_label = QLabel("文化程度")
         self.education = QComboBox()
-        education_list = ['研究生','大学','大专','中专','技校','高中','初中及以下']
+        education_list = list_dic.education_list
         for i in education_list:
             self.education.addItem(i)
 
         self.occup_label = QLabel("个人身份")
         self.occupation = QComboBox()
-        occupation_list = ['公务员','专业技术人员','职员','企业管理者','工人','农民','学生','现役军人',
-                            '自由职业者','个体经营者','无业人员','离退休人员','其他']
+        occupation_list = list_dic.occupation_list
         for i in occupation_list:
             self.occupation.addItem(i)
 
@@ -159,7 +154,7 @@ class Regist(QWidget):
 
         self.death_location_label = QLabel("死亡地点")
         self.death_location = QComboBox()
-        death_location_list = ['医疗卫生机构','来院途中','家中','养老服务机构','其他场所','不详']
+        death_location_list = list_dic.death_location_list
         for i in death_location_list:
             self.death_location.addItem(i)
 
@@ -195,40 +190,32 @@ class Regist(QWidget):
         self.disease_a_time = QLineEdit()
         self.disease_a_time.setPlaceholderText("请输入时间间隔")
         self.disease_a_time_unit = QComboBox()
-        self.disease_a_time_unit.addItem("年")
-        self.disease_a_time_unit.addItem("月")
-        self.disease_a_time_unit.addItem("日")
-        self.disease_a_time_unit.addItem("小时")
+        for i in age_unit_list:
+            self.disease_a_time_unit.addItem(i)
 
         self.disease_b_label = QLabel("直接死亡原因（b）")
         self.disease_b = QLineEdit()
         self.disease_b_time = QLineEdit()
         self.disease_b_time.setPlaceholderText("请输入时间间隔")
         self.disease_b_time_unit = QComboBox()
-        self.disease_b_time_unit.addItem("年")
-        self.disease_b_time_unit.addItem("月")
-        self.disease_b_time_unit.addItem("日")
-        self.disease_b_time_unit.addItem("小时")
+        for i in age_unit_list:
+            self.disease_b_time_unit.addItem(i)
 
         self.disease_c_label = QLabel("直接死亡原因（c）")
         self.disease_c = QLineEdit()
         self.disease_c_time = QLineEdit()
         self.disease_c_time.setPlaceholderText("请输入时间间隔")
         self.disease_c_time_unit = QComboBox()
-        self.disease_c_time_unit.addItem("年")
-        self.disease_c_time_unit.addItem("月")
-        self.disease_c_time_unit.addItem("日")
-        self.disease_c_time_unit.addItem("小时")
+        for i in age_unit_list:
+            self.disease_c_time_unit.addItem(i)
 
         self.disease_d_label = QLabel("直接死亡原因（d）")
         self.disease_d = QLineEdit()
         self.disease_d_time = QLineEdit()
         self.disease_d_time.setPlaceholderText("请输入时间间隔")
         self.disease_d_time_unit = QComboBox()
-        self.disease_d_time_unit.addItem("年")
-        self.disease_d_time_unit.addItem("月")
-        self.disease_d_time_unit.addItem("日")
-        self.disease_d_time_unit.addItem("小时")
+        for i in age_unit_list:
+            self.disease_d_time_unit.addItem(i)
 
         self.other_disease_label = QLabel("Ⅱ.其他疾病诊断")
         self.other_disease = QLineEdit()
@@ -238,13 +225,13 @@ class Regist(QWidget):
 
         self.diagnost_depart_label = QLabel("最高诊断单位")
         self.diagnost_department = QComboBox()
-        diagnost_department_list = ['三级医院','二级医院','乡镇卫生院或社区卫生服务中心','村卫生室','其他医疗卫生机构','未就诊']
+        diagnost_department_list = list_dic.diagnost_department_list
         for i in diagnost_department_list:
             self.diagnost_department.addItem(i)
 
         self.diagnost_method_label = QLabel("最高诊断依据")
         self.diagnost_method = QComboBox()
-        diagnost_method_list = ['尸检','病理','手术','临床+理化','临床','死后推断','不详']
+        diagnost_method_list = list_dic.diagnost_method_list
         for i in diagnost_method_list:
             self.diagnost_method.addItem(i)
 

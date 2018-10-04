@@ -10,9 +10,10 @@ from data import *
 from calendar import *
 from printwindow import *
 from math import ceil
-from address_dic import *
+import address_dic
 import regist
 import login
+import datetime
 
 class QueryWindow(QWidget):
 
@@ -412,8 +413,6 @@ class QueryWindow(QWidget):
         a = (self.present_page-1)*20
         self.query_record(start=a)
 
-
-
     def begin_date_choose(self):
         self.cal = Calendar()
         self.cal.show()
@@ -446,3 +445,7 @@ class QueryWindow(QWidget):
     def to_pydate(self,a):
         b = datetime.datetime(1970, 1, 1) + datetime.timedelta(seconds=a)
         return [b.year, b.month, b.day]
+
+    def keyPressEvent(self,e):
+        if e.key() == Qt.Key_Return:
+            self.query_record()
