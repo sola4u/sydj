@@ -12,6 +12,7 @@ from data import *
 import address_dic
 import datetime
 import print_modle
+import sys
 
 
 class PrintWindow(QWidget):
@@ -34,9 +35,21 @@ class PrintWindow(QWidget):
         qp.drawText(90,40,800,20, Qt.AlignLeft, "安徽省黄山市黄山区")
         qp.drawText(90,60,400,20, Qt.AlignLeft, "行政区划代码 34100300")
         qp.drawText(400,60,310,20, Qt.AlignLeft, "编号：123456789100")
-        qp.drawRect(80,80,80,30)
-        qp.drawText(80,80,80,20, Qt.AlignCenter|Qt.AlignTop, "死者姓名")
-        qp.drawRect(160,80,160,30)
+        qp.drawRect(80,80,80,36)
+        qp.drawText(85,85,80,30, Qt.AlignCenter, "死者姓名")
+        qp.drawRect(160,80,144,36)
+        qp.drawRect(304,80,50,36)
+        qp.drawText(304,85,50,30,Qt.AlignCenter,'性别')
+        qp.drawRect(354,80,124,36)
+        qp.drawRect(478,80,56,36)
+        qp.drawText(478,85,56,30,Qt.AlignCenter,'民族')
+        qp.drawRect(534,80,84,36)
+        qp.drawRect(618,80,66,36)
+        qp.drawText(618,85,66,15,Qt.AlignCenter,'国家或')
+        qp.drawText(618,85,66,45,Qt.AlignCenter,'地区')
+        qp.drawRect(684,80,84,36)
+
+
 
 
 
@@ -155,3 +168,10 @@ class PrintWindow2(QWidget):
     def change_date(self,a):  #time stamp to yyyymmdd
         date = datetime.datetime(1970, 1, 1) + datetime.timedelta(seconds=a)
         return str(date.year)+'年'+ str(date.month) +'月'+str(date.day)+'日'
+
+
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    mainwindow = PrintWindow(0)
+    mainwindow.show()
+    sys.exit(app.exec_())
