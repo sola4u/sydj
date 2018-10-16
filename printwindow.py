@@ -23,23 +23,27 @@ class PrintWindow(QWidget):
         self.resize(800, 600)
         self.printer = QPrinter()
         self.printer.setPageSize(QPrinter.A4)
-        self.drawText()
+        # self.drawText()
+        self.bnt = QPushButton("print")
+        self.layout = QHBoxLayout()
+        self.layout.addWidget(self.bnt)
+        self.setLayout(self.layout)
 
-    # def paintEvent(self, event):
-        # dialog = QPrintDialog(self.printer, self)
-        # if not dialog.exec_():
-            # return
-        # qp = QPainter(self.printer)
-        # qp.begin(self)
-        # self.drawText(event, qp)
-        # qp.end()
-
-    # def drawText(self,event, qp):
-    def drawText(self):
+    def paintEvent(self, event):
         # dialog = QPrintDialog(self.printer, self)
         # if not dialog.exec_():
             # return
         qp = QPainter(self.printer)
+        qp.begin(self)
+        self.drawText(event, qp)
+        qp.end()
+
+    def drawText(self,event, qp):
+    # def drawText(self):
+        # dialog = QPrintDialog(self.printer, self)
+        # if not dialog.exec_():
+            # return
+        # qp = QPainter(self.printer)
         self.db = DataBase()
         self.db.cur.execute("select * from death_info where  serial_number = '%s'"%(self.id))
         self.rslt = self.db.cur.fetchone()
@@ -67,7 +71,7 @@ class PrintWindow(QWidget):
                         self.rslt[15],self.rslt[22], self.rslt[23],self.rslt[24],self.rslt[25],str(self.rslt[26])+self.rslt[27],
                         self.rslt[28],str(self.rslt[29])+self.rslt[30], self.rslt[31], str(self.rslt[32])+self.rslt[33],
                         self.rslt[34], str(self.rslt[35])+self.rslt[36],self.rslt[37],diagnost_department,diagnost_method,
-                        self.change_date(self.rslt[53]),self.rslt[38],0,0,0,0,0,0,0,0]
+                        self.change_date(self.rslt[53]),self.rslt[52],self.rslt[38],0,0,0,0,0,0,0,0]
             for i in range(len(rslt_list)):
                 print(i, rslt_list[i])
 
@@ -281,9 +285,9 @@ class PrintWindow(QWidget):
         qp.drawRect(40,x,700,118)
         qp.drawText(40,x,180,36,Qt.AlignCenter,'死者生前病史及症状体征:')
         research_len = len(rslt_list[34])
-        for i in range(research_len%80):
-            qp.drawText(40,x+36*(1+i),700,36,Qt.AlignCenter,rslt_list[34][i*80:(i+1)*80])
-        qp.drawText(438,x+100,280,36,Qt.AlignCenter,'以上情况属实，被调查者签字:')
+        for i in range(research_len%70):
+            qp.drawText(60,x+36*(1+i),700,36,Qt.AlignLeft,rslt_list[34][i*70:(i+1)*70])
+        qp.drawText(438,x+80,250,36,Qt.AlignCenter,'以上情况属实，被调查者签字:')
 
 
 
