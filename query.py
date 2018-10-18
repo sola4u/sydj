@@ -6,14 +6,16 @@ from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtWebEngineWidgets import *
 from PyQt5 import QtWidgets
+import datetime
 from data import *
 from calendar import *
 from printwindow import *
 from math import ceil
 import address_dic
-import regist
 import login
-import datetime
+from data import *
+from query import *
+from regist import *
 
 class QueryWindow(QWidget):
 
@@ -260,7 +262,7 @@ class QueryWindow(QWidget):
         self.db.cur.execute('select * from death_info where serial_number = %s'%(id))
         rslt = self.db.cur.fetchone()
         self.db.con.close()
-        self.a = regist.Regist(self.user)
+        self.a = Regist(self.user)
         self.a.save_bnt.setText("更新")
         self.a.title.setText("查        看")
 
@@ -268,7 +270,7 @@ class QueryWindow(QWidget):
         report_distinct_name = address_dic.county_dic[self.report_distinct_code[:4]][self.report_distinct_code[:6]]
         self.a.report_distinct.setText(report_distinct_name)
 
-        self.a.report_department.setCurrentIndex(int(rslt[45]))
+        self.a.report_department.setCurrentIndex(int(rslt[46]))
         self.a.serial_number.setText(rslt[3])
         self.a.serial_number.setReadOnly(True)
         self.a.bianhao.setText(rslt[4])
@@ -319,22 +321,22 @@ class QueryWindow(QWidget):
         self.a.disease_d_time_unit.setCurrentText(rslt[36])
         self.a.other_disease.setText(rslt[37])
         self.a.death_reason.setText(rslt[38])
-        self.a.diagnost_department.setCurrentIndex(int(rslt[39]))
-        self.a.diagnost_method.setCurrentIndex(int(rslt[40]))
-        self.a.inhospital.setText(rslt[41])
-        self.a.doctor.setText(rslt[42])
-        regist_list = self.to_pydate(rslt[43])
+        self.a.diagnost_department.setCurrentIndex(int(rslt[40]))
+        self.a.diagnost_method.setCurrentIndex(int(rslt[41]))
+        self.a.inhospital.setText(rslt[42])
+        self.a.doctor.setText(rslt[43])
+        regist_list = self.to_pydate(rslt[44])
         self.a.regist_date.setDate(QDate(regist_list[0],regist_list[1],regist_list[2]))
-        self.a.reporter.setText(rslt[44])
+        self.a.reporter.setText(rslt[45])
         self.a.reporter.setReadOnly(True)
-        self.a.backup.setText(rslt[46])
-        self.a.research.setText(rslt[47])
-        self.a.researcher.setText(rslt[48])
-        self.a.relation.setText(rslt[49])
-        self.a.researcher_address.setText(rslt[50])
-        self.a.researcher_tel.setText(rslt[51])
-        self.a.death_reason2.setText(rslt[52])
-        research_date_list = self.to_pydate(rslt[53])
+        self.a.backup.setText(rslt[47])
+        self.a.research.setText(rslt[48])
+        self.a.researcher.setText(rslt[49])
+        self.a.relation.setText(rslt[50])
+        self.a.researcher_address.setText(rslt[51])
+        self.a.researcher_tel.setText(rslt[52])
+        self.a.death_reason2.setText(rslt[53])
+        research_date_list = self.to_pydate(rslt[54])
         self.a.research_date.setDate(QDate(research_date_list[0],research_date_list[1],research_date_list[2]))
 
         self.a.back_bnt.setText('关闭(ESC)')

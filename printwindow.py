@@ -18,7 +18,7 @@ class PrintWindow(QWidget):
 
     def __init__(self, id):
         super(PrintWindow, self).__init__()
-        self.setFixedSize(810, 600)
+        self.setFixedSize(810, 700)
         self.printer = QPrinter()
         self.printer.setPageSize(QPrinter.A4)
         self.id = id
@@ -48,7 +48,6 @@ class PrintWindow(QWidget):
         self.bnt_layout2 = QWidget()
         self.bnt_layout2.setLayout(self.bnt_layout)
 
-        self.layout.addWidget(self.bnt_layout2)
         self.layout.addWidget(self.paintarea)
 
         self.scroll = QScrollArea(self)
@@ -63,24 +62,23 @@ class PrintWindow(QWidget):
         self.scroll.setWidget(self.layout2)
 
         self.layout3 = QVBoxLayout()
+        self.layout3.addWidget(self.bnt_layout2)
         self.layout3.addWidget(self.scroll)
+        self.layout3.addStretch()
 
         self.setLayout(self.layout3)
 
     def print_page1(self):
-        # dialog = QPrintDialog(self.printer, self)
-        # if not dialog.exec_():
-        #     return
         a = PaintArea2(self.id)
 
     def print_page1_data(self):
-        pass
+        a = PaintPage1Data(self.id)
 
     def close_page(self):
         self.close()
 
     def to_page2(self):
-        pass
+        a = SavePage1(self.id)
 
 class PaintArea(QWidget):
 
@@ -88,35 +86,22 @@ class PaintArea(QWidget):
         super(PaintArea, self).__init__()
         self.id= str(id)
         self.setFixedSize(760, 1080)
-        self.printer = QPrinter()
-        self.printer.setPageSize(QPrinter.A4)
-        # self.drawText()
 
     def paintEvent(self, event):
-        # dialog = QPrintDialog(self.printer, self)
-        # if not dialog.exec_():
-            # return
-        # qp = QPainter(self.printer)
-        map = QPixmap()
+        map = QPixmap(800, 1080)
+        map.fill(Qt.white)
         qp = QPainter(map)
         qp.begin(self)
-        self.drawText(event, qp)
+        self.drawPic(event, qp)
         qp.end()
-        # map.save('a.png')
+        map.save('1.png','PNG')
 
-    def drawText(self,event, qp):
-    # def drawText(self):
-        dialog = QPrintDialog(self.printer, self)
-        if not dialog.exec_():
-            return
-        qp = QPainter(self.printer)
+    def drawPic(self,event, qp):
         self.db = DataBase()
         self.db.cur.execute("select * from death_info where  serial_number = '%s'"%(self.id))
         self.rslt = self.db.cur.fetchone()
         self.db.con.close()
         self.list_dic = Choice_Dic()
-        # for i in range(len(self.rslt)):
-            # print(i, self.rslt[i])
         if self.rslt:
             province = address_dic.province_dic[self.rslt[1][:2]]
             city = address_dic.city_dic[self.rslt[1][:2]][self.rslt[1][:4]]
@@ -139,8 +124,6 @@ class PaintArea(QWidget):
                         self.rslt[34], str(self.rslt[35])+self.rslt[36],self.rslt[37],diagnost_department,diagnost_method,
                         self.change_date(self.rslt[44]),self.rslt[38],self.rslt[39],self.rslt[48],self.rslt[49],self.rslt[50],
                         self.rslt[52],self.rslt[51],self.rslt[53],self.change_date(self.rslt[54])]
-            for i in range(len(rslt_list)):
-                print(i, rslt_list[i])
 
         qp.setPen(QPen(Qt.black,1))
         qp.setFont(QFont('宋体', 16,QFont.Bold))
@@ -400,26 +383,188 @@ class PaintArea(QWidget):
         x += 20
         qp.drawText(40,x,688,30,Qt.AlignLeft,'被调查者有效身份证件，居住地居委会或村委会证明，死者身份证和/或户口簿、生前病史卡.')
 
+    def change_date(self,a):  #time stamp to yyyymmdd
+        date = datetime.datetime(1970, 1, 1) + datetime.timedelta(seconds=a)
+        return str(date.year)+'年'+ str(date.month) +'月'+str(date.day)+'日'
+
+class PaintArea2(PaintArea):
+
+    def __init__(self, id):
+        super().__init__(id)
+        self.id= str(id)
+        self.setFixedSize(760, 1080)
+        self.printer = QPrinter()
+        self.printer.setPageSize(QPrinter.A4)
+
+    def paintEvent(self, event):
+        dialog = QPrintDialog(self.printer, self)
+        if dialog.exec_() != QDialog.Accepted:
+            return
+        qp = QPainter(self.printer)
+        self.drawPic(event, qp)
+
+    def drawPic(self, event, qp):
+        PaintArea.drawPic(self, event, qp)
+
+class SavePage1(PaintArea):
+
+    def __init__(self, id):
+        super(SavePage1, self).__init__(id)
+        self.id = id
+
+    def paintEvent(self, event):
+        map = QPixmap(800, 1080)
+        map.fill(Qt.white)
+        qp = QPainter(map)
+        # qp.begin(self)
+        self.drawPic(event, qp)
+        # qp.end()
+        map.save('%s.png'%(self.id),'PNG')
+
+    def drawPic(self, event, qp):
+        PaintArea.drawPic(self, event, qp)
+
+
+class PaintPage1Data(QWidget):
+
+    def __init__(self,id):
+        super(PaintPage1Data,self).__init__()
+        self.id = id
+        self.setFixedSize(760, 1080)
+        self.printer= QPrinter()
+        self.printer.setPageSize(QPrinter.A4)
+
+    def paintEvent(self, event):
+        qp = QPainter(self.printer)
+        self.drawText(event, qp)
+
+    def drawText(self,event, qp):
+        dialog = QPrintDialog(self.printer, self)
+        if dialog.exec_():
+            return
+        self.db = DataBase()
+        self.db.cur.execute("select * from death_info where  serial_number = '%s'"%(self.id))
+        self.rslt = self.db.cur.fetchone()
+        self.db.con.close()
+        self.list_dic = Choice_Dic()
+        if self.rslt:
+            province = address_dic.province_dic[self.rslt[1][:2]]
+            city = address_dic.city_dic[self.rslt[1][:2]][self.rslt[1][:4]]
+            county = address_dic.county_dic[self.rslt[1][:4]][self.rslt[1][:6]]
+            address = province + city + county
+            gender = self.list_dic.gender_list[self.rslt[6]]
+            race = self.list_dic.race_list[self.rslt[7]]
+            id_class = self.list_dic.id_class_list[self.rslt[8]]
+            marriage = self.list_dic.marriage_list[self.rslt[12]]
+            education = self.list_dic.education_list[self.rslt[13]]
+            occupation = self.list_dic.occupation_list[self.rslt[14]]
+            death_location = self.list_dic.death_location_list[self.rslt[19]]
+            diagnost_department = self.list_dic.diagnost_department_list[self.rslt[40]]
+            diagnost_method = self.list_dic.diagnost_method_list[self.rslt[41]]
+            rslt_list = [address,self.rslt[1],self.rslt[4],self.rslt[5],gender,race,id_class,self.rslt[9],
+                        self.rslt[11],marriage,self.change_date(self.rslt[10]),education,occupation,
+                        self.change_date(self.rslt[21]),death_location,'否',self.rslt[20],self.rslt[17],
+                        self.rslt[15],self.rslt[22], self.rslt[23],self.rslt[24],self.rslt[25],str(self.rslt[26])+self.rslt[27],
+                        self.rslt[28],str(self.rslt[29])+self.rslt[30], self.rslt[31], str(self.rslt[32])+self.rslt[33],
+                        self.rslt[34], str(self.rslt[35])+self.rslt[36],self.rslt[37],diagnost_department,diagnost_method,
+                        self.change_date(self.rslt[44]),self.rslt[38],self.rslt[39],self.rslt[48],self.rslt[49],self.rslt[50],
+                        self.rslt[52],self.rslt[51],self.rslt[53],self.change_date(self.rslt[54])]
+
+        qp.setPen(QPen(Qt.black,1))
+        qp.setFont(QFont('宋体', 9))
+        qp.drawText(50,110,800,14.2, Qt.AlignLeft, rslt_list[0])
+        qp.drawText(100,128,450,23.9, Qt.AlignLeft, "%s"%(rslt_list[1]))
+        qp.drawText(550,128,310,23.9, Qt.AlignLeft, "%s"%(rslt_list[2]))
+        x = 145
+        qp.drawText(115,x,144,30, Qt.AlignCenter,rslt_list[3])
+        qp.drawText(314,x,124,30,Qt.AlignCenter,rslt_list[4])
+        qp.drawText(494,x,84,30,Qt.AlignCenter,rslt_list[5])
+        qp.drawText(644,x,84,30,Qt.AlignCenter,'中国')
+
+        x += 36
+        qp.drawText(115,x,144,65, Qt.AlignCenter,rslt_list[6])
+        qp.drawText(314,x,124,65,Qt.AlignCenter,rslt_list[7])
+        qp.drawText(494,x,84,65,Qt.AlignCenter,rslt_list[8])
+        qp.drawText(644,x,84,65,Qt.AlignCenter,rslt_list[9])
+
+        x += 68
+        qp.drawText(115,x,144,65, Qt.AlignCenter,rslt_list[10])
+        qp.drawText(314,x,124,65,Qt.AlignCenter,rslt_list[11])
+        qp.drawText(494,x,234,65,Qt.AlignCenter,rslt_list[12])
+
+        x += 68
+        qp.drawText(115,x,144,30,Qt.AlignCenter,rslt_list[13])
+        qp.drawText(314,x,180,30,Qt.AlignCenter,rslt_list[14])
+        qp.drawText(644,x,84,30,Qt.AlignCenter,rslt_list[15])
+
+        x += 36
+        qp.drawText(115,x,144,30,Qt.AlignCenter,rslt_list[16])
+        address_a_length = len(rslt_list[17])
+        for i in range(address_a_length%14):
+            qp.drawText(314,x,180,20+30*i,Qt.AlignCenter,rslt_list[17][14*i:14*(i+1)])
+        address_b_length = len(rslt_list[18])
+        for i in range(address_b_length%11):
+            qp.drawText(578,x,150,20+30*i,Qt.AlignCenter,rslt_list[18][11*i:11*(i+1)])
+
+        x += 36
+        qp.drawText(115,x,144,30,Qt.AlignCenter,rslt_list[19])
+        qp.drawText(314,x,180,30,Qt.AlignCenter,rslt_list[20])
+        qp.drawText(578,x,150,30,Qt.AlignCenter,rslt_list[21])
+
+        x += 36
+
+        x += 36
+        qp.drawText(259,x,319,30,Qt.AlignCenter,rslt_list[22])
+        qp.drawText(578,x,150,30,Qt.AlignCenter,rslt_list[23])
+
+        x += 36
+        qp.drawText(259,x,319,30,Qt.AlignCenter,rslt_list[24])
+        qp.drawText(578,x,150,30,Qt.AlignCenter,rslt_list[25])
+
+        x += 36
+        qp.drawText(259,x,319,30,Qt.AlignCenter,rslt_list[26])
+        qp.drawText(578,x,150,30,Qt.AlignCenter,rslt_list[27])
+
+        x += 36
+        qp.drawText(259,x,319,30,Qt.AlignCenter,rslt_list[28])
+        qp.drawText(578,x,150,30,Qt.AlignCenter,rslt_list[29])
+
+        x += 36
+        qp.drawText(259,x,319,30,Qt.AlignCenter,rslt_list[30])
+        qp.drawText(578,x,150,30,Qt.AlignCenter,'')
+
+        x += 36
+        qp.drawText(115,x,379,30,Qt.AlignCenter,rslt_list[31])
+        qp.drawText(578,x,150,36,Qt.AlignCenter,rslt_list[32])
+
+        x += 36
+        qp.drawText(578,x,150,30,Qt.AlignCenter,rslt_list[33])
+
+        x += 36
+        qp.drawText(259,x,235,30,Qt.AlignCenter,rslt_list[34])
+        qp.drawText(578,x,150,30,Qt.AlignCenter,rslt_list[35])
+
+        x += 36
+
+        x += 40
+        research_len = len(rslt_list[36])
+        for i in range(research_len%55):
+            qp.drawText(60,x+30*(1+i),700,36,Qt.AlignLeft,rslt_list[36][i*50:(i+1)*50])
+
+        x += 128
+        qp.drawText(115,x,100,30,Qt.AlignCenter,rslt_list[37])
+        qp.drawText(259,x,55,30,Qt.AlignCenter,rslt_list[38])
+        qp.drawText(394,x,100,30,Qt.AlignCenter,rslt_list[39])
+        qp.drawText(578,x,150,30,Qt.AlignCenter,rslt_list[40])
+
+        x +=36
+        qp.drawText(115,x,199,30,Qt.AlignCenter,rslt_list[41])
+        qp.drawText(578,x,150,30,Qt.AlignCenter,rslt_list[42])
 
     def change_date(self,a):  #time stamp to yyyymmdd
         date = datetime.datetime(1970, 1, 1) + datetime.timedelta(seconds=a)
         return str(date.year)+'年'+ str(date.month) +'月'+str(date.day)+'日'
 
-
-class PaintArea2(PaintArea):
-
-    def __init__(self,id):
-        super(PaintArea2,self).__init__()
-        self.id = id
-
-    def paintEvent(self, event):
-        dialog = QPrintDialog(self.printer, self)
-        if not dialog.exec_():
-            return
-        qp = QPainter(self.printer)
-        qp.begin(self)
-        self.drawText(event, qp)
-        qp.end()
 
 
 if __name__ == '__main__':

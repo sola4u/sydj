@@ -9,8 +9,8 @@ import hashlib
 import sys
 import datetime
 from data import *
-from regist import *
 from query import *
+from regist import *
 
 
 class Login(QWidget):

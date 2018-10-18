@@ -6,12 +6,14 @@ from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtWebEngineWidgets import *
 from PyQt5 import QtWidgets
+import datetime
 from address import *
 from calendar import *
-from login import *
 from data import *
 import address_dic
-import datetime
+import login
+from query import *
+from regist import *
 
 class Regist(QWidget):
 
@@ -94,7 +96,7 @@ class Regist(QWidget):
         self.race.setEditable(True)
         race_rslt = list_dic.race_list
         for i in race_rslt:
-            self.race.addItem(i[1])
+            self.race.addItem(i)
 
         self.nation_label = QLabel('国家或地区')
         self.nation = QLineEdit("中国")
@@ -124,6 +126,7 @@ class Regist(QWidget):
         self.age_generate_bnt = QPushButton("点击生成年龄")
         self.age_generate_bnt.clicked.connect(self.generate_age)
         age_unit_list = list_dic.age_unit
+        age_unit_list2 = ['岁','月','天']
         for i in age_unit_list:
             self.age_unit.addItem(i)
 
@@ -222,6 +225,9 @@ class Regist(QWidget):
 
         self.death_reason_label = QLabel("根本死亡原因")
         self.death_reason = QLineEdit()
+
+        self.icd10_label = QLabel("ICD10编码")
+        self.icd10 = QLineEdit()
 
         self.diagnost_depart_label = QLabel("最高诊断单位")
         self.diagnost_department = QComboBox()
@@ -377,6 +383,8 @@ class Regist(QWidget):
         self.layout.addWidget(self.other_disease,30,1)
         self.layout.addWidget(self.death_reason_label,32,0)
         self.layout.addWidget(self.death_reason,32,1)
+        self.layout.addWidget(self.icd10_label,32,2)
+        self.layout.addWidget(self.icd10,32,3)
         self.layout.addWidget(self.diagnost_depart_label,33,0)
         self.layout.addWidget(self.diagnost_department,33,1)
         self.layout.addWidget(self.diagnost_method_label,34,0)
@@ -592,16 +600,14 @@ class Regist(QWidget):
                 self.disease_a_time_unit.currentText(),self.disease_b.text(),self.change_time(self.disease_b_time.text()),self.disease_b_time_unit.currentText(),
                 self.disease_c.text(),self.change_time(self.disease_c_time.text()),self.disease_c_time_unit.currentText(),
                 self.disease_d.text(),self.change_time(self.disease_d_time.text()),self.disease_d_time_unit.currentText(),self.other_disease.text(),
-                self.death_reason.text(),self.diagnost_department.currentIndex(),self.diagnost_method.currentIndex(),
+                self.death_reason.text(),self.icd10.text(),self.diagnost_department.currentIndex(),self.diagnost_method.currentIndex(),
                 self.inhospital.text(),self.doctor.text(),self.change_date(self.regist_date),self.reporter.text(),self.hospital_id,
                 self.backup.text(),self.research.toPlainText(),self.researcher.text(),self.relation.text(),
                 self.researcher_address.text(),self.researcher_tel.text(),self.death_reason2.text(),self.change_date(self.research_date),0,0
                 )
         insert_sql = '''INSERT INTO death_info VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,
-                ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);
+                ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);
                '''
-        for i in range(len(data)):
-            print(i, data[i],type(data[i])),
         if self.save_bnt.text() == "保存(ENT)":
             self.db.cur.execute("update bianhao set last_year = %d, last_number = %d where hospital_id = %d"%(bianhao_list[1], bianhao_list[2], bianhao_list[3]))
             self.db.cur.execute(insert_sql, data)
@@ -620,23 +626,6 @@ class Regist(QWidget):
     def update_record(self):
         age = self.age.text() + self.age_unit.currentText()
         self.db = DataBase()
-        update_data = (self.bianhao.text(),
-                self.name.text(),self.gender_code.text(),self.race.currentIndex(),self.id_class.currentIndex(),
-                self.id.text(),self.change_date(self.birthday),age,self.marriage.currentIndex(),self.education.currentIndex(),
-                self.occupation.currentIndex(),self.address_now.text(),self.code_now.text(),self.address_birth.text(),
-                self.code_birth.text(),self.death_location.currentIndex(),self.company.text(),self.change_date(self.death_date),
-                self.family.text(),self.family_tel.text(),self.family_address.text(),self.disease_a.text(),self.change_time(self.disease_a_time.text()),
-                self.disease_a_time_unit.currentText(),self.disease_b.text(),self.change_time(self.disease_b_time.text()),self.disease_b_time_unit.currentText(),
-                self.disease_c.text(),self.change_time(self.disease_c_time.text()),self.disease_c_time_unit.currentText(),
-                self.disease_d.text(),self.change_time(self.disease_d_time.text()),self.disease_d_time_unit.currentText(),self.other_disease.text(),
-                self.death_reason.text(),self.diagnost_department.currentIndex(),self.diagnost_method.currentIndex(),
-                self.inhospital.text(),self.doctor.text(),self.change_date(self.regist_date),
-                self.backup.text(),self.research.toPlainText(),self.researcher.text(),self.relation.text(),
-                self.researcher_address.text(),self.researcher_tel.text(),self.death_reason2.text(),self.change_date(self.research_date)
-                )
-        for i in range(len(update_data)):
-            print(i,update_data[i]),
-
         update_sql = '''UPDATE death_info SET bianhao = '{0}',
             name = '{1}',
             gender_code = {2},
@@ -684,7 +673,7 @@ class Regist(QWidget):
             researcher_address = '{44}',
             researcher_tel = '{45}',
             death_reason2 = '{46}',
-            research_date = {47} where serial_number = "{48}"
+            research_date = {47},icd10 = '{48}' where serial_number = "{49}"
             '''.format(self.bianhao.text(),
                 self.name.text(),self.gender_code.text(),self.race.currentIndex(),self.id_class.currentIndex(),
                 self.id.text(),self.change_date(self.birthday),age,self.marriage.currentIndex(),self.education.currentIndex(),
@@ -697,7 +686,7 @@ class Regist(QWidget):
                 self.death_reason.text(),self.diagnost_department.currentIndex(),self.diagnost_method.currentIndex(),
                 self.inhospital.text(),self.doctor.text(),self.change_date(self.regist_date),
                 self.backup.text(),self.research.toPlainText(),self.researcher.text(),self.relation.text(),
-                self.researcher_address.text(),self.researcher_tel.text(),self.death_reason2.text(),self.change_date(self.research_date),self.serial_number.text()
+                self.researcher_address.text(),self.researcher_tel.text(),self.death_reason2.text(),self.change_date(self.research_date),self.icd10.text(),self.serial_number.text()
                 )
         self.db.cur.execute(update_sql)
         msg = QMessageBox.information(self,'提示','是否更改信息？',QMessageBox.Yes,QMessageBox.No)
