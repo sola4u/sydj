@@ -11,7 +11,6 @@ from PyQt5 import QtWidgets
 from data import *
 import address_dic
 import datetime
-import print_modle
 import sys
 
 class PrintWindow(QWidget):
@@ -31,24 +30,31 @@ class PrintWindow(QWidget):
         self.print_bnt2 = QPushButton("仅打印数据")
         self.close_bnt = QPushButton('关闭')
         self.to_page2_bnt = QPushButton("查看第二联")
+        self.save_page1_bnt = QPushButton("save page1")
         self.print_bnt.clicked.connect(self.print_page1)
         self.print_bnt2.clicked.connect(self.print_page1_data)
         self.close_bnt.clicked.connect(self.close_page)
         self.to_page2_bnt.clicked.connect(self.to_page2)
+        self.save_page1_bnt.clicked.connect(self.save_page1)
 
-        self.paintarea = PaintArea(self.id)
+        self.pic = PaintArea(self.id)
+
+        # self.a = QLabel()
+        # self.a.setPixmap(QPixmap('1.png'))
 
         self.bnt_layout = QHBoxLayout()
         self.bnt_layout.addStretch(4)
         self.bnt_layout.addWidget(self.to_page2_bnt)
         self.bnt_layout.addWidget(self.print_bnt)
         self.bnt_layout.addWidget(self.print_bnt2)
+        self.bnt_layout.addWidget(self.save_page1_bnt)
         self.bnt_layout.addWidget(self.close_bnt)
 
         self.bnt_layout2 = QWidget()
         self.bnt_layout2.setLayout(self.bnt_layout)
 
-        self.layout.addWidget(self.paintarea)
+        self.layout.addWidget(self.pic)
+        # self.layout.addWidget(self.a)
 
         self.scroll = QScrollArea(self)
         self.scroll.setAutoFillBackground(True)
@@ -69,16 +75,31 @@ class PrintWindow(QWidget):
         self.setLayout(self.layout3)
 
     def print_page1(self):
-        a = PaintArea2(self.id)
+        self.a.show()
+        self.a.close()
+        self.printer = QPrinter()
+        dialog = QPrintDialog(self.printer, self)
+        if dialog.exec_() != QDialog.Accepted:
+            return
+
 
     def print_page1_data(self):
-        a = PaintPage1Data(self.id)
+        # self.printer.setOutputFormat(QPrinter.PdfFormat)
+        # self.printer.setOutputFileName('a.pdf')
+        pass 
+
 
     def close_page(self):
         self.close()
 
     def to_page2(self):
-        a = SavePage1(self.id)
+        pass
+
+    def save_page1(self):
+        self.a = SavePage1(self.id)
+        self.a.show()
+        # self.a.close()
+        # file, ok = QFileDialog.getSaveFileName(self,'文件保存','./','png files (*.png)')
 
 class PaintArea(QWidget):
 
@@ -88,13 +109,13 @@ class PaintArea(QWidget):
         self.setFixedSize(760, 1080)
 
     def paintEvent(self, event):
-        map = QPixmap(800, 1080)
-        map.fill(Qt.white)
-        qp = QPainter(map)
-        qp.begin(self)
+        # map = QPixmap(800, 1080)
+        # map.fill(Qt.white)
+        qp = QPainter(self)
+        # qp.begin(self)
         self.drawPic(event, qp)
-        qp.end()
-        map.save('1.png','PNG')
+        # qp.end()
+        # map.save('1.png','PNG')
 
     def drawPic(self,event, qp):
         self.db = DataBase()
@@ -387,39 +408,34 @@ class PaintArea(QWidget):
         date = datetime.datetime(1970, 1, 1) + datetime.timedelta(seconds=a)
         return str(date.year)+'年'+ str(date.month) +'月'+str(date.day)+'日'
 
-class PaintArea2(PaintArea):
+class SavePage1(QWidget):
 
     def __init__(self, id):
-        super().__init__(id)
-        self.id= str(id)
-        self.setFixedSize(760, 1080)
-        self.printer = QPrinter()
-        self.printer.setPageSize(QPrinter.A4)
+        super(SavePage1, self).__init__()
+        self.id = id
+        self.set_ui()
 
-    def paintEvent(self, event):
-        dialog = QPrintDialog(self.printer, self)
-        if dialog.exec_() != QDialog.Accepted:
-            return
-        qp = QPainter(self.printer)
-        self.drawPic(event, qp)
+    def set_ui(self):
+        self.a = DrawPage1(self.id)
+        self.layout = QVBoxLayout()
+        self.layout.addWidget(self.a)
+        self.setLayout(self.layout)
 
-    def drawPic(self, event, qp):
-        PaintArea.drawPic(self, event, qp)
-
-class SavePage1(PaintArea):
+class DrawPage1(PaintArea):
 
     def __init__(self, id):
-        super(SavePage1, self).__init__(id)
+        super(DrawPage1, self).__init__(id)
         self.id = id
 
     def paintEvent(self, event):
         map = QPixmap(800, 1080)
         map.fill(Qt.white)
         qp = QPainter(map)
-        # qp.begin(self)
+        qp.begin(self)
         self.drawPic(event, qp)
-        # qp.end()
-        map.save('%s.png'%(self.id),'PNG')
+        qp.end()
+        # a = rslt_list[3] + rslt_list[6]
+        map.save('%s.png'%('a'),'PNG')
 
     def drawPic(self, event, qp):
         PaintArea.drawPic(self, event, qp)
