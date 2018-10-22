@@ -108,10 +108,10 @@ class PaintArea(QWidget):
         # map = QPixmap(800, 1080)
         # map.fill(Qt.white)
         # qp = QPainter(map)
-        qp = QPainter(self)
-        # qp.begin(self)
+        self.printer.setOutputFormat(QPrinter.PdfFormat)
+        self.printer.setOutputFileName('./a.pdf')
+        qp = QPainter(self.printer)
         self.drawPic(event, qp)
-        # qp.end()
         # map.save('a.png','PNG')
 
     def drawPic(self,event, qp):
