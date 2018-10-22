@@ -12,6 +12,8 @@ from data import *
 import address_dic
 import datetime
 import sys
+import platform
+
 
 class PrintWindow(QWidget):
 
@@ -77,7 +79,14 @@ class PrintWindow(QWidget):
         self.setLayout(self.layout3)
 
     def print_page1(self):
-        pass
+        plat_form = platform.platform()
+        if 'Windows' in plat_form:
+            import win32print
+            import win32api
+            currentprinter = win32print.GetDefaultPrinter()
+            win32api.ShellExecute(0,'print','tmp.png','/d:%s'%currentprinter,'.',0)
+        else:
+            pass
 
     def print_page1_data(self):
         # self.printer.setOutputFormat(QPrinter.PdfFormat)
@@ -92,9 +101,8 @@ class PrintWindow(QWidget):
         pass
 
     def save_page1(self):
-        self.a = SavePage1(self.id)
-        self.a.show()
-        # self.a.close()
+        filename,ok = QFileDialog.getSaveFileName(self,'savefile','.')
+        print(filename,ok)
 
 class PaintArea(QWidget):
 
@@ -102,17 +110,19 @@ class PaintArea(QWidget):
         super(PaintArea, self).__init__()
         self.id= str(id)
         self.setFixedSize(760, 1080)
-        self.printer = QPrinter()
+        # self.printer = QPrinter()
 
     def paintEvent(self, event):
-        # map = QPixmap(800, 1080)
-        # map.fill(Qt.white)
-        # qp = QPainter(map)
-        self.printer.setOutputFormat(QPrinter.PdfFormat)
-        self.printer.setOutputFileName('./a.pdf')
-        qp = QPainter(self.printer)
+        map = QPixmap(800, 1080)
+        map.fill(Qt.white)
+        qp = QPainter(map)
+        # self.printer.setOutputFormat(QPrinter.PdfFormat)
+        # self.printer.setOutputFileName('./tmp.pdf')
+        # qp = QPainter(self.printer)
+        qp.begin(self)
         self.drawPic(event, qp)
-        # map.save('a.png','PNG')
+        qp.end()
+        map.save('tmp.png','PNG')
 
     def drawPic(self,event, qp):
         self.db = DataBase()
