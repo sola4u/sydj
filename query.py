@@ -1,21 +1,11 @@
 #/usr/bin/env python
 #coding: utf-8
 
-from PyQt5.QtGui import *
-from PyQt5.QtCore import *
-from PyQt5.QtWidgets import *
-from PyQt5.QtWebEngineWidgets import *
-from PyQt5 import QtWidgets
-import datetime
-from data import *
+import login
 from calendar import *
 from printwindow import *
 from math import ceil
 import address_dic
-import login
-from data import *
-from query import *
-from regist import *
 
 class QueryWindow(QWidget):
 
@@ -394,7 +384,8 @@ class QueryWindow(QWidget):
 
     def close_window(self):
         self.close()
-        self.listwindow = login.ListWindow(self.user)
+        from login import ListWindow
+        self.listwindow = ListWindow(self.user)
         self.listwindow.show()
 
     def to_next_page(self):

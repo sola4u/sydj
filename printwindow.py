@@ -6,7 +6,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtWebEngineWidgets import *
-from PyQt5.QtPrintSupport import QPrinter, QPrintDialog
+from PyQt5.QtPrintSupport import QPrinter, QPrintDialog,QPrintPreviewDialog
 from PyQt5 import QtWidgets
 from data import *
 import address_dic
@@ -17,9 +17,11 @@ class PrintWindow(QWidget):
 
     def __init__(self, id):
         super(PrintWindow, self).__init__()
-        self.setFixedSize(810, 700)
+        # self.setFixedSize(810, 700)
+        self.resize(810, 700)
         self.printer = QPrinter()
         self.printer.setPageSize(QPrinter.A4)
+        self.img = QImage()
         self.id = id
         self.set_ui()
 
@@ -75,18 +77,12 @@ class PrintWindow(QWidget):
         self.setLayout(self.layout3)
 
     def print_page1(self):
-        self.a.show()
-        self.a.close()
-        self.printer = QPrinter()
-        dialog = QPrintDialog(self.printer, self)
-        if dialog.exec_() != QDialog.Accepted:
-            return
-
+        pass
 
     def print_page1_data(self):
         # self.printer.setOutputFormat(QPrinter.PdfFormat)
         # self.printer.setOutputFileName('a.pdf')
-        pass 
+        pass
 
 
     def close_page(self):
@@ -99,7 +95,6 @@ class PrintWindow(QWidget):
         self.a = SavePage1(self.id)
         self.a.show()
         # self.a.close()
-        # file, ok = QFileDialog.getSaveFileName(self,'文件保存','./','png files (*.png)')
 
 class PaintArea(QWidget):
 
@@ -107,15 +102,17 @@ class PaintArea(QWidget):
         super(PaintArea, self).__init__()
         self.id= str(id)
         self.setFixedSize(760, 1080)
+        self.printer = QPrinter()
 
     def paintEvent(self, event):
         # map = QPixmap(800, 1080)
         # map.fill(Qt.white)
+        # qp = QPainter(map)
         qp = QPainter(self)
         # qp.begin(self)
         self.drawPic(event, qp)
         # qp.end()
-        # map.save('1.png','PNG')
+        # map.save('a.png','PNG')
 
     def drawPic(self,event, qp):
         self.db = DataBase()
@@ -360,7 +357,7 @@ class PaintArea(QWidget):
         qp.drawText(40,x,180,36,Qt.AlignCenter,'死者生前病史及症状体征:')
         research_len = len(rslt_list[36])
         for i in range(research_len%55):
-            qp.drawText(60,x+30*(1+i),700,36,Qt.AlignLeft,rslt_list[36][i*50:(i+1)*50])
+            qp.drawText(60,x+30*(1+i),700,36,Qt.AlignLeft,rslt_list[36][i*55:(i+1)*55])
         qp.drawText(438,x+110,250,36,Qt.AlignLeft,'以上情况属实，被调查者签字:')
 
         x += 128

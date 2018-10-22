@@ -105,6 +105,7 @@ class ListWindow(QWidget):
 
     def query_window(self):
         self.close()
+        from query import QueryWindow
         self.window = QueryWindow(self.user)
         self.window.show()
 

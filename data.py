@@ -212,7 +212,7 @@ class Choice_Dic():
         self.death_location_list = ['医疗卫生机构','来院途中','家中','养老服务机构','其他场所','不详']
         self.diagnost_department_list = ['三级医院','二级医院','乡镇卫生院或社区卫生服务中心','村卫生室','其他医疗卫生机构','未就诊']
         self.diagnost_method_list = ['尸检','病理','手术','临床+理化','临床','死后推断','不详']
-        self.age_unit = ['年','月','日','小时']
+        self.age_unit = ['','年','月','日','小时']
 
 
 

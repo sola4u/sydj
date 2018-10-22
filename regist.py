@@ -1,19 +1,11 @@
 #/usr/bin/env python
 #coding: utf-8
 
-from PyQt5.QtGui import *
-from PyQt5.QtCore import *
-from PyQt5.QtWidgets import *
-from PyQt5.QtWebEngineWidgets import *
-from PyQt5 import QtWidgets
-import datetime
+import login
 from address import *
 from calendar import *
-from data import *
 import address_dic
-import login
-from query import *
-from regist import *
+from data import *
 
 class Regist(QWidget):
 
@@ -437,6 +429,7 @@ class Regist(QWidget):
 
     def back_click(self):
         self.close()
+        from login import ListWindow
         self.listwindow = ListWindow(self.user)
         self.listwindow.show()
 
