@@ -13,8 +13,14 @@ import address_dic
 import datetime
 import sys,os
 import platform
-import win32print
-import win32api
+
+
+plat_form = platform.platform()
+if 'Windows' in plat_form:
+    import win32print
+    import win32api
+else:
+    pass
 
 
 class PrintWindow(QWidget):
@@ -152,7 +158,7 @@ class PaintArea(QWidget):
             diagnost_method = self.list_dic.diagnost_method_list[self.rslt[41]]
             self.rslt_list = [address,self.rslt[1],self.rslt[4],self.rslt[5],gender,race,id_class,self.rslt[9],
                         self.rslt[11],marriage,self.change_date(self.rslt[10]),education,occupation,
-                        self.change_date(self.rslt[21]),death_location,'否',self.rslt[20],self.rslt[17],
+                        self.change_datetime(self.rslt[21]),death_location,'否',self.rslt[20],self.rslt[17],
                         self.rslt[15],self.rslt[22], self.rslt[23],self.rslt[24],self.rslt[25],str(self.rslt[26])+self.rslt[27],
                         self.rslt[28],str(self.rslt[29])+self.rslt[30], self.rslt[31], str(self.rslt[32])+self.rslt[33],
                         self.rslt[34], str(self.rslt[35])+self.rslt[36],self.rslt[37],diagnost_department,diagnost_method,
@@ -194,7 +200,7 @@ class PaintArea(QWidget):
         qp.setFont(QFont('宋体', 16,QFont.Bold))
         qp.drawText(0,60,800,50, Qt.AlignCenter, "居民死亡医学证明（推断）书")
         qp.setFont(QFont('宋体', 9))
-        qp.drawText(40,110,800,14.2, Qt.AlignLeft, self.rslt_list[0])
+        qp.drawText(50,110,800,14.2, Qt.AlignLeft, self.rslt_list[0])
         qp.drawText(50,128,400,23.9, Qt.AlignLeft, "行政区划代码 %s"%(self.rslt_list[1]))
         qp.drawText(450,128,300,23.9, Qt.AlignLeft, "编号：%s"%(self.rslt_list[2]))
 
@@ -256,22 +262,24 @@ class PaintArea(QWidget):
         qp.drawText(483,x,262,65,Qt.AlignCenter,self.rslt_list[12])
 
         x += 68
-        qp.drawRect(30,x,80,36)
-        qp.drawRect(110,x,144,36)
-        qp.drawRect(254,x,50,36)
-        qp.drawRect(304,x,179,36)
-        qp.drawRect(483,x,142,36)
-        qp.drawRect(625,x,120,36)
-        qp.drawText(30,x,80,30,Qt.AlignCenter,'死亡日期')
-        qp.drawText(110,x,144,30,Qt.AlignCenter,self.rslt_list[13])
-        qp.drawText(254,x,50,20,Qt.AlignCenter,'死亡')
-        qp.drawText(254,x,50,50,Qt.AlignCenter,'地点')
-        qp.drawText(304,x,179,30,Qt.AlignCenter,self.rslt_list[14])
-        qp.drawText(483,x,142,20,Qt.AlignCenter,'死亡时是否处于妊娠期')
-        qp.drawText(483,x,142,50,Qt.AlignCenter,'或妊娠终止后42天内')
-        qp.drawText(625,x,120,30,Qt.AlignCenter,self.rslt_list[15])
+        qp.drawRect(30,x,80,50)
+        qp.drawRect(110,x,144,50)
+        qp.drawRect(254,x,50,50)
+        qp.drawRect(304,x,179,50)
+        qp.drawRect(483,x,142,50)
+        qp.drawRect(625,x,120,50)
+        qp.drawText(30,x,80,45,Qt.AlignCenter,'死亡日期')
+        date_time = self.rslt_list[13].split('/')
+        qp.drawText(110,x,144,30,Qt.AlignCenter,date_time[0])
+        qp.drawText(110,x,144,60,Qt.AlignCenter,date_time[1])
+        qp.drawText(254,x,50,30,Qt.AlignCenter,'死亡')
+        qp.drawText(254,x,50,60,Qt.AlignCenter,'地点')
+        qp.drawText(304,x,179,45,Qt.AlignCenter,self.rslt_list[14])
+        qp.drawText(483,x,142,30,Qt.AlignCenter,'死亡时是否处于妊娠期')
+        qp.drawText(483,x,142,60,Qt.AlignCenter,'或妊娠终止后42天内')
+        qp.drawText(625,x,120,45,Qt.AlignCenter,self.rslt_list[15])
 
-        x += 36
+        x += 50
         qp.drawRect(30,x,80,36)
         qp.drawRect(110,x,144,36)
         qp.drawRect(254,x,50,36)
@@ -453,7 +461,7 @@ class PaintArea(QWidget):
         qp.setPen(QPen(Qt.black,1))
         qp.setFont(QFont('宋体', 9))
 
-        qp.drawText(40,110,800,14.2, Qt.AlignLeft, self.rslt_list[0])
+        qp.drawText(50,110,800,14.2, Qt.AlignLeft, self.rslt_list[0])
         qp.drawText(100,128,400,23.9, Qt.AlignLeft, "%s"%(self.rslt_list[1]))
         qp.drawText(550,128,300,23.9, Qt.AlignLeft, "%s"%(self.rslt_list[2]))
 
@@ -469,17 +477,19 @@ class PaintArea(QWidget):
         qp.drawText(483,x,82,65,Qt.AlignCenter,self.rslt_list[8])
         qp.drawText(625,x,120,65,Qt.AlignCenter,self.rslt_list[9])
 
-        x += 68
+        x += 36
         qp.drawText(110,x,144,65, Qt.AlignCenter,self.rslt_list[10])
         qp.drawText(304,x,124,65,Qt.AlignCenter,self.rslt_list[11])
         qp.drawText(483,x,262,65,Qt.AlignCenter,self.rslt_list[12])
 
         x += 68
-        qp.drawText(110,x,144,30,Qt.AlignCenter,self.rslt_list[13])
-        qp.drawText(304,x,179,30,Qt.AlignCenter,self.rslt_list[14])
-        qp.drawText(625,x,120,30,Qt.AlignCenter,self.rslt_list[15])
+        date_time = self.rslt_list[13].split('/')
+        qp.drawText(110,x,144,30,Qt.AlignCenter,date_time[0])
+        qp.drawText(110,x,144,60,Qt.AlignCenter,date_time[1])
+        qp.drawText(304,x,179,45,Qt.AlignCenter,self.rslt_list[14])
+        qp.drawText(625,x,120,45,Qt.AlignCenter,self.rslt_list[15])
 
-        x += 36
+        x += 50
         qp.drawText(110,x,144,30,Qt.AlignCenter,self.rslt_list[16])
         address_a_length = len(self.rslt_list[17])
         for i in range(address_a_length%14):
@@ -488,7 +498,7 @@ class PaintArea(QWidget):
         for i in range(address_b_length%11):
             qp.drawText(565,x,180,20+30*i,Qt.AlignCenter,self.rslt_list[18][11*i:11*(i+1)])
 
-        x += 36
+        x += 50
         qp.drawText(110,x,144,30,Qt.AlignCenter,self.rslt_list[19])
         qp.drawText(304,x,179,30,Qt.AlignCenter,self.rslt_list[20])
         qp.drawText(565,x,180,30,Qt.AlignCenter,self.rslt_list[21])
@@ -547,11 +557,11 @@ class PaintArea(QWidget):
 
     def change_date(self,a):  #time stamp to yyyymmdd
         date = datetime.datetime(1970, 1, 1) + datetime.timedelta(seconds=a)
-        return str(date.year)+'年'+ str(date.month) +'月'+str(date.day)+'日'
+        return str(date.year)+'年'+ str(date.month).zfill(2) +'月'+str(date.day).zfill(2)+'日'
 
-    def change_date_to_seconds(self,a):  #time stamp to yyyymmdd
-        date = datetime.datetime(1970, 1, 1) + datetime.timedelta(seconds=a)
-        return str(date.year)+'年'+ str(date.month) +'月'+str(date.day)+'日' + str(date.hour) +'时' +str(date.minute) +'分'
+    def change_datetime(self,a):  #time stamp to yyyymmdd
+        date = datetime.datetime(1970, 1, 1, 0, 0) + datetime.timedelta(seconds=a)
+        return str(date.year)+'年'+ str(date.month).zfill(2) +'月'+str(date.day).zfill(2)+'日/' + str(date.hour).zfill(2) +'时' +str(date.minute).zfill(2) +'分'
 
 class Print_Setting(QWidget):
 

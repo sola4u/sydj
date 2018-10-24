@@ -33,6 +33,7 @@ class Regist(QWidget):
         self.db.cur.execute("select a.*,b.* from user as a, hospital as b where a.hospital_id = b.id and a.username = '%s'"%(self.user))
         rslt = self.db.cur.fetchall()[0]
         self.hospital_id = rslt[3]
+        self.distinct_code = str(rslt[8])
         # self.db.cur.execute("select * from race")
         # race_rslt = self.db.cur.fetchall()
         self.db.cur.execute("select name from hospital")
@@ -121,7 +122,7 @@ class Regist(QWidget):
         self.age_generate_bnt.clicked.connect(self.generate_age)
         age_unit_list = list_dic.age_unit
         age_unit_list2 = ['岁','月','天']
-        for i in age_unit_list:
+        for i in age_unit_list2:
             self.age_unit.addItem(i)
 
         self.marriage_label = QLabel("婚姻状况")
@@ -160,12 +161,18 @@ class Regist(QWidget):
         self.company.setClearButtonEnabled(True)
 
         address_a = Address()
+        address_a.province.setCurrentText(address_dic.province_dic[self.distinct_code[:2]])
+        address_a.city.setCurrentText(address_dic.city_dic[self.distinct_code[:2]][self.distinct_code[:4]])
+        address_a.county.setCurrentText(address_dic.county_dic[self.distinct_code[:4]][self.distinct_code[:6]])
         address_a.location_label.setText("户籍详细地址")
         address_a.id_label.setText("户籍地址国标")
         self.address_now = address_a.location
         self.code_now = address_a.id
 
         address_b = Address()
+        address_b.province.setCurrentText(address_dic.province_dic[self.distinct_code[:2]])
+        address_b.city.setCurrentText(address_dic.city_dic[self.distinct_code[:2]][self.distinct_code[:4]])
+        address_b.county.setCurrentText(address_dic.county_dic[self.distinct_code[:4]][self.distinct_code[:6]])
         address_b.location_label.setText("死者生前详细地址")
         address_b.id_label.setText("死者生前常住地址国标")
         self.address_birth= address_b.location
@@ -321,17 +328,17 @@ class Regist(QWidget):
         self.layout.addWidget(self.bianhao,2,3)
         self.layout.addWidget(self.name_label,3,0)
         self.layout.addWidget(self.name,3,1)
-        self.layout.addWidget(self.gender_label,4,0)
-        self.layout.addWidget(self.gender_layout2,4,1,1,2)
-        self.layout.addWidget(self.race_label,5,0)
-        self.layout.addWidget(self.race,5,1)
-        self.layout.addWidget(self.nation_label,6,0)
-        self.layout.addWidget(self.nation,6,1)
-        self.layout.addWidget(self.id_class_label,7,0)
-        self.layout.addWidget(self.id_class,7,1)
-        self.layout.addWidget(self.id_label,8,0)
-        self.layout.addWidget(self.id,8,1)
-        self.layout.addWidget(self.id_bnt,8,2)
+        self.layout.addWidget(self.id_class_label,4,0)
+        self.layout.addWidget(self.id_class,4,1)
+        self.layout.addWidget(self.id_label,5,0)
+        self.layout.addWidget(self.id,5,1)
+        self.layout.addWidget(self.id_bnt,5,2)
+        self.layout.addWidget(self.gender_label,6,0)
+        self.layout.addWidget(self.gender_layout2,6,1,1,2)
+        self.layout.addWidget(self.race_label,7,0)
+        self.layout.addWidget(self.race,7,1)
+        self.layout.addWidget(self.nation_label,8,0)
+        self.layout.addWidget(self.nation,8,1)
         self.layout.addWidget(self.birth_label,9,0)
         self.layout.addWidget(self.birthday,9,1)
         self.layout.addWidget(self.birth_date_choose,9,2)
@@ -537,9 +544,17 @@ class Regist(QWidget):
         if self.death_date != '':
             death_date = self.death_date.date().toPyDate()
             birth_date = self.birthday.date().toPyDate()
-            date = death_date - birth_date
-            age = str(round(date.days/365.25))
-            self.age.setText(age)
+            date_delta = death_date - birth_date
+            day_delta = date_delta.days
+            if day_delta < 30:
+                self.age.setText(str(day_delta))
+                self.age_unit.setCurrentText("天")
+            elif day_delta < 365.26:
+                self.age.setText(str(round(day_delta//30)))
+                self.age_unit.setCurrentText("月")
+            else:
+                self.age.setText(str(round(day_delta//365.25)))
+                self.age_unit.setCurrentText("岁")
         else:
             self.age_generate_bnt.setText("死亡日期未填写")
 
@@ -552,12 +567,12 @@ class Regist(QWidget):
         self.birthday.setDate(date)
 
     def show_death_cal(self):
-        self.cal = Calendar()
+        self.cal = Calendar_With_Clock()
         self.cal.show()
-        self.cal.date_signal.connect(self.input_deathday)
+        self.cal.datetime_signal.connect(self.input_deathday)
 
-    def input_deathday(self, date):
-        self.death_date.setDate(date)
+    def input_deathday(self, datetime):
+        self.death_date.setDateTime(datetime)
 
     def show_regist_cal(self):
         self.cal = Calendar()
@@ -583,6 +598,15 @@ class Regist(QWidget):
         seconds = days*24*3600
         return seconds
 
+    def change_datetime(self,pyqtdatetime):   # a pyqtdate style /yyyymmdd to time stamp
+        pydate = pyqtdatetime.dateTime().toPyDateTime()
+        base_date = datetime.datetime(1970,1,1,0,0)
+        day_delta = pydate - base_date
+        days = day_delta.days
+        seconds = day_delta.seconds
+        seconds += days*24*3600
+        return seconds
+
     def change_time(self, time_text): # disease time to integer
         try:
             a = int(time_text)
@@ -600,12 +624,12 @@ class Regist(QWidget):
                 self.name.text(),self.gender_code.text(),self.race.currentIndex(),self.id_class.currentIndex(),
                 self.id.text(),self.change_date(self.birthday),age,self.marriage.currentIndex(),self.education.currentIndex(),
                 self.occupation.currentIndex(),self.address_now.text(),self.code_now.text(),self.address_birth.text(),
-                self.code_birth.text(),self.death_location.currentIndex(),self.company.text(),self.change_date(self.death_date),
-                self.family.text(),self.family_tel.text(),self.family_address.text(),self.disease_a.text(),self.change_time(self.disease_a_time.text()),
-                self.disease_a_time_unit.currentText(),self.disease_b.text(),self.change_time(self.disease_b_time.text()),self.disease_b_time_unit.currentText(),
-                self.disease_c.text(),self.change_time(self.disease_c_time.text()),self.disease_c_time_unit.currentText(),
-                self.disease_d.text(),self.change_time(self.disease_d_time.text()),self.disease_d_time_unit.currentText(),self.other_disease.text(),
-                self.death_reason.text(),self.icd10.text(),self.diagnost_department.currentIndex(),self.diagnost_method.currentIndex(),
+                self.code_birth.text(),self.death_location.currentIndex(),self.company.text(),self.change_datetime(self.death_date),
+                self.family.text(),self.family_tel.text(),self.family_address.text(),self.disease_a.text(),self.disease_a_time.text(),
+                self.disease_a_time_unit.currentText(),self.disease_b.text(),self.disease_b_time.text(),self.disease_b_time_unit.currentText(),
+                self.disease_c.text(),self.disease_c_time.text(),self.disease_c_time_unit.currentText(),
+                self.disease_d.text(),self.disease_d_time.text(),self.disease_d_time_unit.currentText(),self.other_disease.text(),
+                self.death_reason.text(),self.icd10.text().upper(),self.diagnost_department.currentIndex(),self.diagnost_method.currentIndex(),
                 self.inhospital.text(),self.doctor.text(),self.change_date(self.regist_date),self.reporter.text(),self.hospital_id,
                 self.backup.text(),self.research.toPlainText(),self.researcher.text(),self.relation.text(),
                 self.researcher_address.text(),self.researcher_tel.text(),self.death_reason2.text(),self.change_date(self.research_date),0,0
@@ -685,13 +709,13 @@ class Regist(QWidget):
                 self.occupation.currentIndex(),self.address_now.text(),self.code_now.text(),self.address_birth.text(),
                 self.code_birth.text(),self.death_location.currentIndex(),self.company.text(),self.change_date(self.death_date),
                 self.family.text(),self.family_tel.text(),self.family_address.text(),self.disease_a.text(),self.change_time(self.disease_a_time.text()),
-                self.disease_a_time_unit.currentText(),self.disease_b.text(),self.change_time(self.disease_b_time.text()),self.disease_b_time_unit.currentText(),
+                self.disease_a_time_unit.currentText(),self.disease_b.text(),self.disease_b_time.text(),self.disease_b_time_unit.currentText(),
                 self.disease_c.text(),self.change_time(self.disease_c_time.text()),self.disease_c_time_unit.currentText(),
                 self.disease_d.text(),self.change_time(self.disease_d_time.text()),self.disease_d_time_unit.currentText(),self.other_disease.text(),
                 self.death_reason.text(),self.diagnost_department.currentIndex(),self.diagnost_method.currentIndex(),
                 self.inhospital.text(),self.doctor.text(),self.change_date(self.regist_date),
                 self.backup.text(),self.research.toPlainText(),self.researcher.text(),self.relation.text(),
-                self.researcher_address.text(),self.researcher_tel.text(),self.death_reason2.text(),self.change_date(self.research_date),self.icd10.text(),self.serial_number.text()
+                self.researcher_address.text(),self.researcher_tel.text(),self.death_reason2.text(),self.change_date(self.research_date),self.icd10.text().upper(),self.serial_number.text()
                 )
         self.db.cur.execute(update_sql)
         msg = QMessageBox.information(self,'提示','是否更改信息？',QMessageBox.Yes,QMessageBox.No)
