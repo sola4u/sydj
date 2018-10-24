@@ -248,6 +248,7 @@ class QueryWindow(QWidget):
         return self.widget
 
     def view_record(self,id):
+        from login import Regist
         self.db = DataBase()
         self.db.cur.execute('select * from death_info where serial_number = %s'%(id))
         rslt = self.db.cur.fetchone()
@@ -360,7 +361,7 @@ class QueryWindow(QWidget):
         self.query_record()
 
     def print_record(self, id):
-        self.window = PrintWindow(id)
+        self.window = PrintWindow(id,1)
         self.window.show()
 
     def report_record(self, id):

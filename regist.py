@@ -6,6 +6,8 @@ from address import *
 from calendar import *
 import address_dic
 from data import *
+from printwindow import *
+import datetime
 
 class Regist(QWidget):
 
@@ -281,8 +283,11 @@ class Regist(QWidget):
         self.back_bnt = QPushButton('返回(ESC)')
         self.back_bnt.clicked.connect(self.back_click)
 
-        self.print_bnt = QPushButton('打印(F5)')
-        self.print_bnt.clicked.connect(self.print_record)
+        self.print_page1_bnt = QPushButton('打印第一联(F5)')
+        self.print_page1_bnt.clicked.connect(self.print_page1)
+
+        self.print_page1_data_bnt = QPushButton('打印第一联数据')
+        self.print_page1_data_bnt.clicked.connect(self.print_page1_data)
 
         self.save_bnt = QPushButton('保存(ENT)')
         self.save_bnt.clicked.connect(self.save_record)
@@ -301,7 +306,8 @@ class Regist(QWidget):
         self.bnt_layout2 = QWidget()
         self.bnt_layout.addWidget(self.add_bnt)
         self.bnt_layout.addWidget(self.save_bnt)
-        self.bnt_layout.addWidget(self.print_bnt)
+        self.bnt_layout.addWidget(self.print_page1_bnt)
+        self.bnt_layout.addWidget(self.print_page1_data_bnt)
         self.bnt_layout.addWidget(self.back_bnt)
         self.bnt_layout2.setLayout(self.bnt_layout)
 
@@ -451,9 +457,15 @@ class Regist(QWidget):
         self.db.con.close()
         return [depart_code, year, last_number, hospital_id]
 
-    def print_record(self):
-        print(self.report_department.currentText(), self.report_department.currentIndex())
+    def print_page1(self):
+        # print(self.report_department.currentText(), self.report_department.currentIndex())
+        self.a = PrintWindow(self.serial_number.text(), 1)
+        self.a.show()
 
+    def print_page1_data(self):
+        # print(self.report_department.currentText(), self.report_department.currentIndex())
+        self.a = PrintWindow(self.serial_number.text(), 2)
+        self.a.show()
 
     def gender_male(self, state):
         if state == Qt.Checked:
