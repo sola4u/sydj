@@ -362,6 +362,7 @@ class QueryWindow(QWidget):
 
     def print_record(self, id):
         self.window = PrintWindow(id,1)
+        self.window.print_data_bnt.clicked.connect(self.window.print_page1_data)
         self.window.show()
 
     def report_record(self, id):

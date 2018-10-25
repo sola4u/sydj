@@ -290,11 +290,8 @@ class Regist(QWidget):
         self.back_bnt = QPushButton('返回(ESC)')
         self.back_bnt.clicked.connect(self.back_click)
 
-        self.print_page1_bnt = QPushButton('打印第一联(F5)')
-        self.print_page1_bnt.clicked.connect(self.print_page1)
-
-        self.print_page1_data_bnt = QPushButton('打印第一联数据')
-        self.print_page1_data_bnt.clicked.connect(self.print_page1_data)
+        self.print_page_bnt = QPushButton('打印(F5)')
+        self.print_page_bnt.clicked.connect(self.print_page)
 
         self.save_bnt = QPushButton('保存(ENT)')
         self.save_bnt.clicked.connect(self.save_record)
@@ -313,8 +310,7 @@ class Regist(QWidget):
         self.bnt_layout2 = QWidget()
         self.bnt_layout.addWidget(self.add_bnt)
         self.bnt_layout.addWidget(self.save_bnt)
-        self.bnt_layout.addWidget(self.print_page1_bnt)
-        self.bnt_layout.addWidget(self.print_page1_data_bnt)
+        self.bnt_layout.addWidget(self.print_page_bnt)
         self.bnt_layout.addWidget(self.back_bnt)
         self.bnt_layout2.setLayout(self.bnt_layout)
 
@@ -435,7 +431,6 @@ class Regist(QWidget):
         self.layout3 = QVBoxLayout()
         self.layout3.addWidget(self.title)
         self.layout3.addWidget(self.scroll)
-        # self.layout.addWidget(self.bnt_layout2,50,0,1,4)
         self.layout3.addWidget(self.bnt_layout2)
 
         self.setLayout(self.layout3)
@@ -464,19 +459,13 @@ class Regist(QWidget):
         self.db.con.close()
         return [depart_code, year, last_number, hospital_id]
 
-    def print_page1(self):
-        # print(self.report_department.currentText(), self.report_department.currentIndex())
+    def print_page(self):
         self.a = PrintWindow(self.serial_number.text(), 1)
-        self.a.show()
-
-    def print_page1_data(self):
-        # print(self.report_department.currentText(), self.report_department.currentIndex())
-        self.a = PrintWindow(self.serial_number.text(), 2)
+        self.a.print_data_bnt.clicked.connect(self.a.print_page1_data)
         self.a.show()
 
     def gender_male(self, state):
         if state == Qt.Checked:
-            # self.gender.setText("男性")
             self.gender_code.setText('1')
             self.female.setChecked(False)
             self.unkonwn_gender.setChecked(False)
@@ -484,7 +473,6 @@ class Regist(QWidget):
 
     def gender_female(self, state):
         if state == Qt.Checked:
-            # self.gender.setText("女性")
             self.gender_code.setText('2')
             self.male.setChecked(False)
             self.unkonwn_gender.setChecked(False)
@@ -492,7 +480,6 @@ class Regist(QWidget):
 
     def gender_unkonwn(self, state):
         if state == Qt.Checked:
-            # self.gender.setText("未知的性别")
             self.gender_code.setText('3')
             self.male.setChecked(False)
             self.female.setChecked(False)
@@ -500,7 +487,6 @@ class Regist(QWidget):
 
     def gender_unscript(self, state):
         if state == Qt.Checked:
-            # self.gender.setText("未说明的性别")
             self.gender_code.setText('4')
             self.male.setChecked(False)
             self.unkonwn_gender.setChecked(False)
