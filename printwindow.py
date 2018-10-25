@@ -599,7 +599,7 @@ class PaintArea(QWidget):
                 qp.drawText(150 + i*320, -60, 150,30, Qt.AlignCenter, "第四联 殡葬管理部门保存")
                 qp.rotate(-90)
 
-            x = 100 + 330*i
+            x = 100 + 320*i
             qp.setFont(QFont('Arial', 10))
             qp.drawText(80,x,400,20, Qt.AlignLeft, "行政区划代码 %s"%(self.rslt_list[1]))
             qp.drawText(500,x,300,20, Qt.AlignLeft, "编号：%s"%(self.rslt_list[2]))
@@ -736,10 +736,10 @@ class PaintArea(QWidget):
     def draw_page2_data(self, event, qp):
         qp.setPen(QPen(Qt.black, 1, Qt.SolidLine))
         for i in range(3):
-            x = 100 + 330*i
+            x = 100 + 320*i
             qp.setFont(QFont('Arial', 10))
-            qp.drawText(80,x,400,20, Qt.AlignLeft, "行政区划代码 %s"%(self.rslt_list[1]))
-            qp.drawText(500,x,300,20, Qt.AlignLeft, "编号：%s"%(self.rslt_list[2]))
+            qp.drawText(180,x,400,20, Qt.AlignLeft, "%s"%(self.rslt_list[1]))
+            qp.drawText(400,x,300,20, Qt.AlignLeft, "%s"%(self.rslt_list[2]))
             qp.setFont(QFont('宋体', 9))
 
             x += 20
@@ -786,11 +786,13 @@ class PaintArea(QWidget):
 
     def change_date(self,a):  #time stamp to yyyymmdd
         date = datetime.datetime(1970, 1, 1) + datetime.timedelta(seconds=a)
-        return str(date.year)+'年'+ str(date.month).zfill(2) +'月'+str(date.day).zfill(2)+'日'
+        # return str(date.year)+'年'+ str(date.month).zfill(2) +'月'+str(date.day).zfill(2)+'日'
+        return str(date.year)+'  '+ str(date.month).zfill(2) +'  '+str(date.day).zfill(2)
 
     def change_datetime(self,a):  #time stamp to yyyymmdd
         date = datetime.datetime(1970, 1, 1, 0, 0) + datetime.timedelta(seconds=a)
-        return str(date.year)+'年'+ str(date.month).zfill(2) +'月'+str(date.day).zfill(2)+'日/' + str(date.hour).zfill(2) +'时' +str(date.minute).zfill(2) +'分'
+        # return str(date.year)+'年'+ str(date.month).zfill(2) +'月'+str(date.day).zfill(2)+'日/' + str(date.hour).zfill(2) +'时' +str(date.minute).zfill(2) +'分'
+        return str(date.year)+'  '+ str(date.month).zfill(2) +'  '+str(date.day).zfill(2)+'  /' + str(date.hour).zfill(2) +'  ' +str(date.minute).zfill(2)
 
 class Print_Setting(QWidget):
 
