@@ -607,7 +607,7 @@ class Regist(QWidget):
 
         self.db = DataBase()
         data = (0,self.report_distinct_code,self.report_department.currentText(), self.number2,bianhao,
-                self.name.text(),self.gender_code.text(),self.race.currentIndex(),self.id_class.currentIndex(),
+                self.name.text(),self.gender_code.text(),self.race.currentIndex(),self.nation.text(),self.id_class.currentIndex(),
                 self.id.text(),self.change_date(self.birthday),age,self.marriage.currentIndex(),self.education.currentIndex(),
                 self.occupation.currentIndex(),self.address_now.text(),self.code_now.text(),self.address_birth.text(),
                 self.code_birth.text(),self.death_location.currentIndex(),self.company.text(),self.change_datetime(self.death_date),
@@ -621,7 +621,7 @@ class Regist(QWidget):
                 self.researcher_address.text(),self.researcher_tel.text(),self.death_reason2.text(),self.change_date(self.research_date),0,0
                 )
         insert_sql = '''INSERT INTO death_info VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,
-                ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);
+                ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);
                '''
         if self.save_bnt.text() == "保存(ENT)":
             self.db.cur.execute("update bianhao set last_year = %d, last_number = %d where hospital_id = %d"%(bianhao_list[1], bianhao_list[2], bianhao_list[3]))
@@ -688,7 +688,9 @@ class Regist(QWidget):
             researcher_address = '{44}',
             researcher_tel = '{45}',
             death_reason2 = '{46}',
-            research_date = {47},icd10 = '{48}' where serial_number = "{49}"
+            research_date = {47},
+            icd10 = '{48}',
+            nation = '{49}' where serial_number = "{50}"
             '''.format(self.bianhao.text(),
                 self.name.text(),self.gender_code.text(),self.race.currentIndex(),self.id_class.currentIndex(),
                 self.id.text(),self.change_date(self.birthday),age,self.marriage.currentIndex(),self.education.currentIndex(),
@@ -701,7 +703,8 @@ class Regist(QWidget):
                 self.death_reason.text(),self.diagnost_department.currentIndex(),self.diagnost_method.currentIndex(),
                 self.inhospital.text(),self.doctor.text(),self.change_date(self.regist_date),
                 self.backup.text(),self.research.toPlainText(),self.researcher.text(),self.relation.text(),
-                self.researcher_address.text(),self.researcher_tel.text(),self.death_reason2.text(),self.change_date(self.research_date),self.icd10.text().upper(),self.serial_number.text()
+                self.researcher_address.text(),self.researcher_tel.text(),self.death_reason2.text(),
+                self.change_date(self.research_date),self.icd10.text().upper(),self.nation.text(),self.serial_number.text()
                 )
         self.db.cur.execute(update_sql)
         msg = QMessageBox.information(self,'提示','是否更改信息？',QMessageBox.Yes,QMessageBox.No)
@@ -716,3 +719,11 @@ class Regist(QWidget):
         self.close()
         self.new = Regist(self.user)
         self.new.show()
+
+    def keyPressEvent(self, e):
+        if e.key() == Qt.Key_Return:
+            self.save_record()
+
+    def mousePressEvent(self, e):
+        if e.buttons() == Qt.MiddleButton:
+            pass

@@ -26,14 +26,14 @@ class PrintWindow(QWidget):
 
     def __init__(self, id, label):
         super(PrintWindow, self).__init__()
-        # self.setFixedSize(810, 700)
-        self.resize(810, 700)
+        self.setFixedSize(810, 700)
+        self.setWindowTitle("打印")
         self.printer = QPrinter()
         self.printer.setPageSize(QPrinter.A4)
         self.img = QImage()
         self.id = str(id)
         self.db = DataBase()
-        self.db.cur.execute('select name from death_info where serial_number = %s'%(self.id))
+        self.db.cur.execute('select name from death_info where serial_number = "%s"'%(self.id))
         self.name = self.db.cur.fetchone()[0]
         self.db.con.close()
         self.label = label
@@ -42,11 +42,11 @@ class PrintWindow(QWidget):
     def  set_ui(self):
         self.layout = QVBoxLayout()
 
-        self.print_bnt = QPushButton("打印")
+        self.print_bnt = QPushButton("打印(ENT)")
         self.print_data_bnt = QPushButton("仅打印数据")
         self.change_page_bnt= QPushButton("查看第二联")
-        self.save_bnt = QPushButton("保存")
-        self.close_bnt = QPushButton('关闭')
+        self.save_bnt = QPushButton("保存(F5)")
+        self.close_bnt = QPushButton('关闭(ESC)')
         self.print_bnt.clicked.connect(self.print_page)
         # self.print_data_bnt.clicked.connect(self.print_page1_data)
         self.close_bnt.clicked.connect(self.close_page)
@@ -149,6 +149,14 @@ class PrintWindow(QWidget):
             self.new_window.print_data_bnt.clicked.connect(self.new_window.print_page1_data)
             self.close()
 
+    def keyPressEvent(self, e):
+        if e.key() == Qt.Key_Return:
+            self.print_page()
+        elif e.key() == Qt.Key_Escape:
+            self.close_page()
+        elif e.key() == Qt.F5:
+            self.save_page()
+
 
 class PaintArea(QWidget):
 
@@ -170,21 +178,21 @@ class PaintArea(QWidget):
             address = [province,city,county]
             gender = self.list_dic.gender_list[self.rslt[6]]
             race = self.list_dic.race_list[self.rslt[7]]
-            id_class = self.list_dic.id_class_list[self.rslt[8]]
-            marriage = self.list_dic.marriage_list[self.rslt[12]]
-            education = self.list_dic.education_list[self.rslt[13]]
-            occupation = self.list_dic.occupation_list[self.rslt[14]]
-            death_location = self.list_dic.death_location_list[self.rslt[19]]
-            diagnost_department = self.list_dic.diagnost_department_list[self.rslt[40]]
-            diagnost_method = self.list_dic.diagnost_method_list[self.rslt[41]]
-            self.rslt_list = [address,self.rslt[1],self.rslt[4],self.rslt[5],gender,race,id_class,self.rslt[9],
-                        self.rslt[11],marriage,self.change_date(self.rslt[10]),education,occupation,
-                        self.change_datetime(self.rslt[21]),death_location,'否',self.rslt[20],self.rslt[17],
-                        self.rslt[15],self.rslt[22], self.rslt[23],self.rslt[24],self.rslt[25],str(self.rslt[26])+self.rslt[27],
-                        self.rslt[28],str(self.rslt[29])+self.rslt[30], self.rslt[31], str(self.rslt[32])+self.rslt[33],
-                        self.rslt[34], str(self.rslt[35])+self.rslt[36],self.rslt[37],diagnost_department,diagnost_method,
-                        self.change_date(self.rslt[44]),self.rslt[38],self.rslt[39],self.rslt[48],self.rslt[49],self.rslt[50],
-                        self.rslt[52],self.rslt[51],self.rslt[53],self.change_date(self.rslt[54]),self.rslt[11]]
+            id_class = self.list_dic.id_class_list[self.rslt[9]]
+            marriage = self.list_dic.marriage_list[self.rslt[13]]
+            education = self.list_dic.education_list[self.rslt[14]]
+            occupation = self.list_dic.occupation_list[self.rslt[15]]
+            death_location = self.list_dic.death_location_list[self.rslt[20]]
+            diagnost_department = self.list_dic.diagnost_department_list[self.rslt[41]]
+            diagnost_method = self.list_dic.diagnost_method_list[self.rslt[42]]
+            self.rslt_list = [address,self.rslt[1],self.rslt[4],self.rslt[5],gender,race,id_class,self.rslt[10],
+                        self.rslt[12],marriage,self.change_date(self.rslt[11]),education,occupation,
+                        self.change_datetime(self.rslt[22]),death_location,'否',self.rslt[21],self.rslt[18],
+                        self.rslt[16],self.rslt[23], self.rslt[24],self.rslt[25],self.rslt[26],str(self.rslt[27])+self.rslt[28],
+                        self.rslt[29],str(self.rslt[30])+self.rslt[31], self.rslt[32], str(self.rslt[33])+self.rslt[34],
+                        self.rslt[35], str(self.rslt[36])+self.rslt[37],self.rslt[38],diagnost_department,diagnost_method,
+                        self.change_date(self.rslt[45]),self.rslt[39],self.rslt[40],self.rslt[49],self.rslt[50],self.rslt[51],
+                        self.rslt[53],self.rslt[52],self.rslt[54],self.change_date(self.rslt[55]),self.rslt[8],self.rslt[12]]
 
     def paintEvent(self, event):
         qp = QPainter(self)
@@ -237,7 +245,7 @@ class PaintArea(QWidget):
         qp.drawText(483,x,82,30,Qt.AlignCenter,self.rslt_list[5])
         qp.drawText(565,x,60,20,Qt.AlignCenter,'国家或')
         qp.drawText(565,x,60,50,Qt.AlignCenter,'地区')
-        qp.drawText(625,x,120,30,Qt.AlignCenter,'中国')
+        qp.drawText(625,x,120,30,Qt.AlignCenter,self.rslt_list[-2])
 
         x += 36
         qp.drawRect(30,x,80, 68)
@@ -487,7 +495,7 @@ class PaintArea(QWidget):
         qp.drawText(250,110,80,14.2, Qt.AlignLeft, self.rslt_list[0][1])
         qp.drawText(430,110,80,14.2, Qt.AlignLeft, self.rslt_list[0][2])
         qp.setFont(QFont('Arial', 10))
-        qp.drawText(110,125,400,23.9, Qt.AlignLeft, "%s"%(self.rslt_list[1]))
+        qp.drawText(120,125,400,23.9, Qt.AlignLeft, "%s"%(self.rslt_list[1]))
         qp.drawText(430,125,300,23.9, Qt.AlignLeft, "%s"%(self.rslt_list[2]))
         qp.setFont(QFont("宋体", 9))
 
@@ -495,7 +503,7 @@ class PaintArea(QWidget):
         qp.drawText(110,x,144,30, Qt.AlignCenter,self.rslt_list[3])
         qp.drawText(304,x,124,30,Qt.AlignCenter,self.rslt_list[4])
         qp.drawText(483,x,82,30,Qt.AlignCenter,self.rslt_list[5])
-        qp.drawText(625,x,120,30,Qt.AlignCenter,'中国')
+        qp.drawText(625,x,120,30,Qt.AlignCenter,self.rslt_list[-2])
 
         x += 36
         qp.drawText(110,x,144,65, Qt.AlignCenter,self.rslt_list[6])
@@ -580,19 +588,19 @@ class PaintArea(QWidget):
         for i in range(3):
             qp.setFont(QFont('宋体', 14,QFont.Bold))
             if i == 0:
-                qp.drawText(0,60 + i*330,740,50, Qt.AlignCenter, "居民死亡医学证明（推断）书")
+                qp.drawText(0,50 + i*330,740,50, Qt.AlignCenter, "居民死亡医学证明（推断）书")
                 qp.setFont(QFont('宋体', 9))
                 qp.rotate(90)
                 qp.drawText(150, -60, 150,30, Qt.AlignCenter, "第二联 公安机关保存")
                 qp.rotate(-90)
             elif i == 1:
-                qp.drawText(0,60 + i*330,740,50, Qt.AlignCenter, "居民死亡医学证明（推断）书")
+                qp.drawText(0,50 + i*330,740,50, Qt.AlignCenter, "居民死亡医学证明（推断）书")
                 qp.setFont(QFont('宋体', 9))
                 qp.rotate(90)
                 qp.drawText(150 + i*320, -60, 150,30, Qt.AlignCenter, "第三联 死者家属保存")
                 qp.rotate(-90)
             else:
-                qp.drawText(0,60 + i*330,740,50, Qt.AlignCenter, "居民死亡殡葬证")
+                qp.drawText(0,50 + i*330,740,50, Qt.AlignCenter, "居民死亡殡葬证")
                 qp.setFont(QFont('宋体', 9))
                 qp.rotate(90)
                 qp.drawText(150 + i*320, -60, 150,30, Qt.AlignCenter, "第四联 殡葬管理部门保存")
@@ -625,7 +633,7 @@ class PaintArea(QWidget):
             qp.drawText(130, x, 100, 30, Qt.AlignCenter,self.rslt_list[3])
             qp.drawText(290, x, 60, 30, Qt.AlignCenter,self.rslt_list[4])
             qp.drawText(410, x, 60, 30, Qt.AlignCenter,self.rslt_list[5])
-            qp.drawText(530, x, 60, 30, Qt.AlignCenter,'中国')
+            qp.drawText(530, x, 60, 30, Qt.AlignCenter,self.rslt_list[-2])
             qp.drawText(650, x, 60, 30, Qt.AlignCenter,self.rslt_list[-1])
 
             x += 36
@@ -667,7 +675,7 @@ class PaintArea(QWidget):
             death_date = self.rslt_list[13].split('/')[0]
             qp.drawText(130, x, 100, 30, Qt.AlignCenter,self.rslt_list[10])
             qp.drawText(290, x, 120, 30, Qt.AlignCenter,death_date)
-            qp.drawText(590, x, 120, 30, Qt.AlignCenter,self.rslt_list[14])
+            qp.drawText(470, x, 240, 30, Qt.AlignCenter,self.rslt_list[14])
 
             x += 36
             qp.drawRect(70, x, 60, 36)
@@ -734,6 +742,7 @@ class PaintArea(QWidget):
 
     def draw_page2_data(self, event, qp):
         qp.setPen(QPen(Qt.black, 1, Qt.SolidLine))
+
         for i in range(3):
             x = 100 + 320*i
             qp.setFont(QFont('Arial', 10))
@@ -745,7 +754,7 @@ class PaintArea(QWidget):
             qp.drawText(130, x, 100, 30, Qt.AlignCenter,self.rslt_list[3])
             qp.drawText(290, x, 60, 30, Qt.AlignCenter,self.rslt_list[4])
             qp.drawText(410, x, 60, 30, Qt.AlignCenter,self.rslt_list[5])
-            qp.drawText(530, x, 60, 30, Qt.AlignCenter,'中国')
+            qp.drawText(530, x, 60, 30, Qt.AlignCenter,self.rslt_list[-2])
             qp.drawText(650, x, 60, 30, Qt.AlignCenter,self.rslt_list[-1])
 
             x += 36
@@ -763,7 +772,7 @@ class PaintArea(QWidget):
             death_date = self.rslt_list[13].split('/')[0]
             qp.drawText(130, x, 100, 30, Qt.AlignCenter,self.rslt_list[10])
             qp.drawText(290, x, 120, 30, Qt.AlignCenter,death_date)
-            qp.drawText(590, x, 120, 30, Qt.AlignCenter,self.rslt_list[14])
+            qp.drawText(470, x, 240, 30, Qt.AlignCenter,self.rslt_list[14])
 
             x += 36
             death_reason_len = len(self.rslt_list[22])
@@ -785,13 +794,13 @@ class PaintArea(QWidget):
 
     def change_date(self,a):  #time stamp to yyyymmdd
         date = datetime.datetime(1970, 1, 1) + datetime.timedelta(seconds=a)
-        # return str(date.year)+'年'+ str(date.month).zfill(2) +'月'+str(date.day).zfill(2)+'日'
-        return str(date.year)+'  '+ str(date.month).zfill(2) +'  '+str(date.day).zfill(2)
+        return str(date.year)+'年'+ str(date.month).zfill(2) +'月'+str(date.day).zfill(2)+'日'
+        # return str(date.year)+'  '+ str(date.month).zfill(2) +'  '+str(date.day).zfill(2)
 
     def change_datetime(self,a):  #time stamp to yyyymmdd
         date = datetime.datetime(1970, 1, 1, 0, 0) + datetime.timedelta(seconds=a)
-        # return str(date.year)+'年'+ str(date.month).zfill(2) +'月'+str(date.day).zfill(2)+'日/' + str(date.hour).zfill(2) +'时' +str(date.minute).zfill(2) +'分'
-        return str(date.year)+'  '+ str(date.month).zfill(2) +'  '+str(date.day).zfill(2)+'  /' + str(date.hour).zfill(2) +'  ' +str(date.minute).zfill(2)
+        return str(date.year)+'年'+ str(date.month).zfill(2) +'月'+str(date.day).zfill(2)+'日/' + str(date.hour).zfill(2) +'时' +str(date.minute).zfill(2) +'分'
+        # return str(date.year)+'  '+ str(date.month).zfill(2) +'  '+str(date.day).zfill(2)+'  /' + str(date.hour).zfill(2) +'  ' +str(date.minute).zfill(2)
 
 class Print_Setting(QWidget):
 
@@ -836,9 +845,10 @@ class Print_Setting(QWidget):
         self.printer_signal.emit(self.current_printer.text())
         self.close()
 
+
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    mainwindow = PrintWindow('20180925145630743',1)
+    mainwindow = PrintWindow('20181026094542501',1)
     mainwindow.print_data_bnt.clicked.connect(mainwindow.print_page1_data)
     mainwindow.show()
     sys.exit(app.exec_())
