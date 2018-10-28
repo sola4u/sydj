@@ -31,6 +31,7 @@ class QueryWindow(QWidget):
         hospital_list = [i[0] for i in hospital]
         self.name_label = QLabel("姓    名")
         self.name = QLineEdit()
+        self.name.setClearButtonEnabled(True)
         self.begin_date_label = QLabel("起始日期")
         self.begin_date = QDateEdit()
         self.begin_date_bnt = QPushButton()
@@ -363,7 +364,6 @@ class QueryWindow(QWidget):
 
     def print_record(self, id):
         self.window = PrintWindow(id,1)
-        self.window.print_data_bnt.clicked.connect(self.window.print_page1_data)
         self.window.show()
 
     def report_record(self, id):

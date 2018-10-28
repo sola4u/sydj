@@ -48,7 +48,7 @@ class PrintWindow(QWidget):
         self.save_bnt = QPushButton("保存(F5)")
         self.close_bnt = QPushButton('关闭(ESC)')
         self.print_bnt.clicked.connect(self.print_page)
-        # self.print_data_bnt.clicked.connect(self.print_page1_data)
+        self.print_data_bnt.clicked.connect(self.print_page1_data)
         self.close_bnt.clicked.connect(self.close_page)
         self.change_page_bnt.clicked.connect(self.change_page)
         self.save_bnt.clicked.connect(self.save_page)
@@ -112,7 +112,7 @@ class PrintWindow(QWidget):
         self.new_window.show()
         self.new_window.change_page_bnt.setText("查看第一联")
         self.new_window.print_data_bnt.setText("打印第二联数据")
-        # self.new_window.print_data_bnt.clicked.disconnect(self.new_window.print_page1_data)
+        self.new_window.print_data_bnt.clicked.disconnect(self.new_window.print_page1_data)
         self.new_window.print_data_bnt.clicked.connect(self.new_window.print_page2_data)
         # self.new_window.save_bnt.clicked.disconnect(self.new_window.save_page1)
         # self.new_window.save_bnt.clicked.connect(self.new_window.save_page2)
@@ -130,7 +130,7 @@ class PrintWindow(QWidget):
         self.new_window.show()
         self.new_window.change_page_bnt.setText("查看第二联")
         self.new_window.print_data_bnt.setText("打印第一联数据")
-        self.new_window.print_data_bnt.clicked.connect(self.new_window.print_page1_data)
+        # self.new_window.print_data_bnt.clicked.connect(self.new_window.print_page1_data)
         self.close()
 
     def change_page(self):
@@ -139,6 +139,7 @@ class PrintWindow(QWidget):
             self.new_window.show()
             self.new_window.change_page_bnt.setText("查看第一联")
             self.new_window.print_data_bnt.setText("打印第二联数据")
+            self.new_window.print_data_bnt.clicked.disconnect(self.new_window.print_page1_data)
             self.new_window.print_data_bnt.clicked.connect(self.new_window.print_page2_data)
             self.close()
         else:
@@ -146,7 +147,7 @@ class PrintWindow(QWidget):
             self.new_window.show()
             self.new_window.change_page_bnt.setText("查看第二联")
             self.new_window.print_data_bnt.setText("打印第一联数据")
-            self.new_window.print_data_bnt.clicked.connect(self.new_window.print_page1_data)
+            # self.new_window.print_data_bnt.clicked.connect(self.new_window.print_page1_data)
             self.close()
 
     def keyPressEvent(self, e):
@@ -849,6 +850,6 @@ class Print_Setting(QWidget):
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     mainwindow = PrintWindow('20181026094542501',1)
-    mainwindow.print_data_bnt.clicked.connect(mainwindow.print_page1_data)
+    # mainwindow.print_data_bnt.clicked.connect(mainwindow.print_page1_data)
     mainwindow.show()
     sys.exit(app.exec_())

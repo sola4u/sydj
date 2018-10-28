@@ -461,7 +461,6 @@ class Regist(QWidget):
 
     def print_page(self):
         self.a = PrintWindow(self.serial_number.text(), 1)
-        self.a.print_data_bnt.clicked.connect(self.a.print_page1_data)
         self.a.show()
 
     def gender_male(self, state):
