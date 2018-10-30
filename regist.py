@@ -71,6 +71,7 @@ class Regist(QWidget):
         # self.gender = QLineEdit()
         self.gender_code = QLineEdit()
         self.male = QCheckBox('男')
+        self.male.setChecked(True)
         self.male.stateChanged.connect(self.gender_male)
         self.female = QCheckBox('女')
         self.female.stateChanged.connect(self.gender_female)
@@ -460,7 +461,13 @@ class Regist(QWidget):
         return [depart_code, year, last_number, hospital_id]
 
     def print_page(self):
-        self.a = PrintWindow(self.serial_number.text(), 1)
+        self.save_record()
+        self.a = PrintWindow(self.number2, 1)
+        self.a.show()
+
+    def print_page2(self):
+        # self.save_record()
+        self.a = PrintWindow(self.serial_number, 1)
         self.a.show()
 
     def gender_male(self, state):
@@ -640,7 +647,8 @@ class Regist(QWidget):
     def update_record(self):
         age = self.age.text() + self.age_unit.currentText()
         self.db = DataBase()
-        update_sql = '''UPDATE death_info SET bianhao = '{0}',
+        update_sql = '''UPDATE death_info SET
+            bianhao = '{0}',
             name = '{1}',
             gender_code = {2},
             race_code = {3},
@@ -689,22 +697,24 @@ class Regist(QWidget):
             death_reason2 = '{46}',
             research_date = {47},
             icd10 = '{48}',
-            nation = '{49}' where serial_number = "{50}"
+            nation = '{49}'
+            where serial_number = "{50}"
             '''.format(self.bianhao.text(),
                 self.name.text(),self.gender_code.text(),self.race.currentIndex(),self.id_class.currentIndex(),
                 self.id.text(),self.change_date(self.birthday),age,self.marriage.currentIndex(),self.education.currentIndex(),
                 self.occupation.currentIndex(),self.address_now.text(),self.code_now.text(),self.address_birth.text(),
                 self.code_birth.text(),self.death_location.currentIndex(),self.company.text(),self.change_date(self.death_date),
                 self.family.text(),self.family_tel.text(),self.family_address.text(),self.disease_a.text(),self.change_time(self.disease_a_time.text()),
-                self.disease_a_time_unit.currentText(),self.disease_b.text(),self.disease_b_time.text(),self.disease_b_time_unit.currentText(),
+                self.disease_a_time_unit.currentText(),self.disease_b.text(),self.change_time(self.disease_b_time.text()),self.disease_b_time_unit.currentText(),
                 self.disease_c.text(),self.change_time(self.disease_c_time.text()),self.disease_c_time_unit.currentText(),
                 self.disease_d.text(),self.change_time(self.disease_d_time.text()),self.disease_d_time_unit.currentText(),self.other_disease.text(),
                 self.death_reason.text(),self.diagnost_department.currentIndex(),self.diagnost_method.currentIndex(),
                 self.inhospital.text(),self.doctor.text(),self.change_date(self.regist_date),
                 self.backup.text(),self.research.toPlainText(),self.researcher.text(),self.relation.text(),
                 self.researcher_address.text(),self.researcher_tel.text(),self.death_reason2.text(),
-                self.change_date(self.research_date),self.icd10.text().upper(),self.nation.text(),self.serial_number.text()
+                self.change_date(self.research_date),self.icd10.text().upper(),self.nation.text(),self.number2
                 )
+        print(update_sql)
         self.db.cur.execute(update_sql)
         msg = QMessageBox.information(self,'提示','是否更改信息？',QMessageBox.Yes,QMessageBox.No)
         if msg == QMessageBox.Yes:

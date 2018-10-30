@@ -30,13 +30,12 @@ class PrintWindow(QWidget):
         self.setWindowTitle("打印")
         self.printer = QPrinter()
         self.printer.setPageSize(QPrinter.A4)
-        self.img = QImage()
         self.id = str(id)
+        self.label = label
         self.db = DataBase()
         self.db.cur.execute('select name from death_info where serial_number = "%s"'%(self.id))
         self.name = self.db.cur.fetchone()[0]
         self.db.con.close()
-        self.label = label
         self.set_ui()
 
     def  set_ui(self):

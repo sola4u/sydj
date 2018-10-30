@@ -6,6 +6,7 @@ from calendar import *
 from printwindow import *
 from math import ceil
 import address_dic
+import xlwt
 
 class QueryWindow(QWidget):
 
@@ -256,6 +257,7 @@ class QueryWindow(QWidget):
         self.db.con.close()
         self.a = Regist(self.user)
         self.a.save_bnt.setText("更新")
+        self.a.number2 = id
         self.a.title.setText("查        看")
 
         self.report_distinct_code = str(rslt[1])
@@ -383,7 +385,56 @@ class QueryWindow(QWidget):
         self.end_date.setDate(QDate.currentDate())
 
     def export_record(self):
-        pass
+        self.db = DataBase()
+        self.db.cur.execute('select a.account_level, b.name from user as a, hospital as b where a.hospital_id = b.id and a.username = "%s"'%(self.user))
+        rslt = self.db.cur.fetchone()
+        if rslt[0] == 9:
+            if self.department.currentText() == 'admin':
+                department_sql = ''
+            else:
+                department_sql = ' and death_info.report_department = "%s"'%(self.department.currentText())
+        else:
+            department_sql = ' and death_info.report_department = "%s"'%(rslt[1])
+
+        self.numbers =  numbers
+        self.start = start
+        if self.name.text() == '':
+            name_sql = ' and death_info.name like "%"'
+        else:
+            name_text = '%' + self.name.text() + '%'
+            name_sql = ' and death_info.name like "%s"'%(name_text)
+
+        if self.all_record.isChecked():
+            is_deleted_sql = ' and death_info.is_deleted = 0'
+        elif self.undeleted_record.isChecked():
+            is_deleted_sql = ' and death_info.is_deleted < 2 '
+        else:
+            is_deleted_sql = ' and death_info.is_reported = 0 and death_info.is_deleted = 0'
+        if self.by_death_date.isChecked():
+            date_sql = 'death_info.death_date'
+        else:
+            date_sql = 'death_info.regist_date'
+        begin_date_interge = self.change_date(self.begin_date)
+        end_date_interge = self.change_date(self.end_date)
+        sql = '''
+            select death_info.serial_number,death_info.name,gender.gender_name,death_info.id,death_info.birthday,death_info.address_now,death_info.death_date,
+            death_info.disease_a,
+            death_info.doctor, death_info.regist_date, death_info.report_department,death_info.is_deleted, death_info.is_reported from death_info,gender
+            where death_info.gender_code = gender.gender_serial and date_conditon between %d and %d
+        '''%(begin_date_interge,end_date_interge)
+
+        sql2 = sql.replace('date_conditon',date_sql) +department_sql + is_deleted_sql + name_sql
+        self.db.cur.execute(sql2)
+        rlst = self.db.cur.fetchall()
+
+        file, ok = QFileDialog.getSaveFileName(self,'文件保存','./','Excel Files (*.xls)')
+        workbook = xlwt.Workbook(encodeing='utf8')
+        worksheet = workbook.add_sheet("sheet1")
+        head = ['',]
+        date_style = xlwt.XFStyle()
+        date_style.num_format_str = 'yyyy/mm/dd'
+
+
 
     def close_window(self):
         self.close()
