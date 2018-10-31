@@ -33,6 +33,7 @@ class Regist(QWidget):
         self.db.cur.execute("select a.*,b.* from user as a, hospital as b where a.hospital_id = b.id and a.username = '%s'"%(self.user))
         rslt = self.db.cur.fetchall()[0]
         self.hospital_id = rslt[3]
+        self.hospital_code = rslt[9]
         self.distinct_code = str(rslt[8])
         # self.db.cur.execute("select * from race")
         # race_rslt = self.db.cur.fetchall()
@@ -56,7 +57,7 @@ class Regist(QWidget):
 
         self.serial_number_label = QLabel('编号')
         self.serial_number = QLineEdit()
-        self.number2 = str(QDateTime.currentDateTime().toPyDateTime()).replace('/',
+        self.number2 = self.hospital_code + str(QDateTime.currentDateTime().toPyDateTime()).replace('/',
                             '').replace(' ','').replace(':','').replace('.','').replace('-','')[:-3]
         self.serial_number.setPlaceholderText(self.number2)
         self.serial_number.setReadOnly(True)
@@ -472,28 +473,28 @@ class Regist(QWidget):
 
     def gender_male(self, state):
         if state == Qt.Checked:
-            self.gender_code.setText('1')
+            self.gender_code.setText('0')
             self.female.setChecked(False)
             self.unkonwn_gender.setChecked(False)
             self.unscript_gender.setChecked(False)
 
     def gender_female(self, state):
         if state == Qt.Checked:
-            self.gender_code.setText('2')
+            self.gender_code.setText('1')
             self.male.setChecked(False)
             self.unkonwn_gender.setChecked(False)
             self.unscript_gender.setChecked(False)
 
     def gender_unkonwn(self, state):
         if state == Qt.Checked:
-            self.gender_code.setText('3')
+            self.gender_code.setText('2')
             self.male.setChecked(False)
             self.female.setChecked(False)
             self.unscript_gender.setChecked(False)
 
     def gender_unscript(self, state):
         if state == Qt.Checked:
-            self.gender_code.setText('4')
+            self.gender_code.setText('3')
             self.male.setChecked(False)
             self.unkonwn_gender.setChecked(False)
             self.female.setChecked(False)
@@ -728,6 +729,8 @@ class Regist(QWidget):
         self.close()
         self.new = Regist(self.user)
         self.new.show()
+
+
 
     def keyPressEvent(self, e):
         if e.key() == Qt.Key_Return:

@@ -6,6 +6,7 @@ from calendar import *
 from printwindow import *
 from math import ceil
 import address_dic
+from data import *
 import xlwt
 
 class QueryWindow(QWidget):
@@ -396,8 +397,6 @@ class QueryWindow(QWidget):
         else:
             department_sql = ' and death_info.report_department = "%s"'%(rslt[1])
 
-        self.numbers =  numbers
-        self.start = start
         if self.name.text() == '':
             name_sql = ' and death_info.name like "%"'
         else:
@@ -417,22 +416,56 @@ class QueryWindow(QWidget):
         begin_date_interge = self.change_date(self.begin_date)
         end_date_interge = self.change_date(self.end_date)
         sql = '''
-            select death_info.serial_number,death_info.name,gender.gender_name,death_info.id,death_info.birthday,death_info.address_now,death_info.death_date,
-            death_info.disease_a,
-            death_info.doctor, death_info.regist_date, death_info.report_department,death_info.is_deleted, death_info.is_reported from death_info,gender
-            where death_info.gender_code = gender.gender_serial and date_conditon between %d and %d
+            select report_distinct_code, bianhao,name,gender_code,race_code,nation,
+            age,id_class,id,address_now,address_birth,birthday,death_date, death_location_code,death_reason,
+            family, family_tel, family_address,doctor, report_department from death_info
+            where date_conditon between %d and %d
         '''%(begin_date_interge,end_date_interge)
 
         sql2 = sql.replace('date_conditon',date_sql) +department_sql + is_deleted_sql + name_sql
         self.db.cur.execute(sql2)
-        rlst = self.db.cur.fetchall()
+        rslt = self.db.cur.fetchall()
 
-        file, ok = QFileDialog.getSaveFileName(self,'文件保存','./','Excel Files (*.xls)')
-        workbook = xlwt.Workbook(encodeing='utf8')
+        file, ok = QFileDialog.getSaveFileName(self,'文件保存','%s'%('死因数据交换（卫生系统数据）'),'Excel Files (*.xls)')
+        workbook = xlwt.Workbook(encoding='utf8')
         worksheet = workbook.add_sheet("sheet1")
-        head = ['',]
+        head = ['行政区划代码','省市县名称','死亡证编号','死者姓名','性别','民族','国家或地区','年龄',
+                '身份证件类型','身份证件号码','常住地址','户籍地址','出生日期','死亡日期','死亡地点',
+                '死亡原因','家属姓名','联系电话','家属地址或单位','医师签名','医疗卫生机构名称']
         date_style = xlwt.XFStyle()
         date_style.num_format_str = 'yyyy/mm/dd'
+        k = len(rslt)
+        for i in range(k+1) :
+            if i == 0:
+                for j in range(21):
+                    worksheet.write(i,j,head[j])
+            else:
+
+                tmp = [j for j in rslt[i-1]]
+                tmp.insert(1,'')
+
+                province = address_dic.province_dic[tmp[0][:2]]
+                city = address_dic.city_dic[tmp[0][:2]][tmp[0][:4]]
+                county = address_dic.county_dic[tmp[0][:4]][tmp[0][:6]]
+                address = [province,city,county]
+                tmp[1] = ''.join(address)
+                self.list_dic = Choice_Dic()
+                tmp[4] = self.list_dic.gender_list[tmp[4]]
+                tmp[5] = self.list_dic.race_list[tmp[5]]
+                tmp[8] = self.list_dic.id_class_list[tmp[8]]
+                tmp[14] = self.list_dic.death_location_list[tmp[14]]
+
+
+                for j in range(21):
+                    if j == 12:
+                        worksheet.write(i,j,tmp[j]/3600/24+25570,date_style)
+                    elif j == 13:
+                        worksheet.write(i,j,tmp[j]/3600/24+25570,date_style)
+                    else:
+                        worksheet.write(i,j,tmp[j])
+        workbook.save(file)
+        QMessageBox.warning(self,'success','保存成功')
+        self.db.con.close()
 
 
 

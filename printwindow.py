@@ -672,9 +672,10 @@ class PaintArea(QWidget):
             qp.drawText(230, x, 60, 50, Qt.AlignCenter,'日期')
             qp.drawText(410, x, 60, 20, Qt.AlignCenter,'死亡')
             qp.drawText(410, x, 60, 50, Qt.AlignCenter,'地点')
-            death_date = self.rslt_list[13].split('/')[0]
             qp.drawText(130, x, 100, 30, Qt.AlignCenter,self.rslt_list[10])
-            qp.drawText(290, x, 120, 30, Qt.AlignCenter,death_date)
+            death_date = self.rslt_list[13].split('/')
+            qp.drawText(290, x+5, 110, 30, Qt.AlignRight|Qt.AlignTop,death_date[0])
+            qp.drawText(290, x+5, 110, 30,Qt.AlignRight|Qt.AlignBottom,death_date[1])
             qp.drawText(470, x, 240, 30, Qt.AlignCenter,self.rslt_list[14])
 
             x += 36
@@ -769,9 +770,10 @@ class PaintArea(QWidget):
                     qp.drawText(480,x + 5 + 15*i,240,25,Qt.AlignLeft|Qt.AlignTop,self.rslt_list[17][18*i:18*(i+1)])
 
             x += 36
-            death_date = self.rslt_list[13].split('/')[0]
             qp.drawText(130, x, 100, 30, Qt.AlignCenter,self.rslt_list[10])
-            qp.drawText(290, x, 120, 30, Qt.AlignCenter,death_date)
+            death_date = self.rslt_list[13].split('/')
+            qp.drawText(300, x+5, 110, 30, Qt.AlignRight|Qt.AlignTop,death_date[0])
+            qp.drawText(300, x+5, 110, 30,Qt.AlignRight|Qt.AlignBottom,death_date[1])
             qp.drawText(470, x, 240, 30, Qt.AlignCenter,self.rslt_list[14])
 
             x += 36

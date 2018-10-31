@@ -11,6 +11,7 @@ import datetime
 from data import *
 from query import *
 from regist import *
+from import_data import *
 
 
 class Login(QWidget):
@@ -82,20 +83,26 @@ class ListWindow(QWidget):
         super(ListWindow,self).__init__()
         self.user = username
         self.setFixedSize(600, 400)
-        self.setWindowTitle("登记")
+        self.setWindowTitle("主页")
         self.set_ui()
 
     def set_ui(self):
         self.regist = QPushButton("regist")
         self.query = QPushButton("query")
         self.user_info = QPushButton("user_info")
+        self.import_csv = QPushButton("导入文件")
+        self.close_bnt = QPushButton("关闭")
         self.regist.clicked.connect(self.regist_window)
         self.query.clicked.connect(self.query_window)
         self.user_info.clicked.connect(self.user_info_window)
+        self.import_csv.clicked.connect(self.import_csvdata)
+        self.close_bnt.clicked.connect(self.close)
         self.layout = QHBoxLayout()
         self.layout.addWidget(self.regist)
         self.layout.addWidget(self.query)
         self.layout.addWidget(self.user_info)
+        self.layout.addWidget(self.import_csv)
+        self.layout.addWidget(self.close_bnt)
         self.setLayout(self.layout)
 
     def regist_window(self):
@@ -113,6 +120,12 @@ class ListWindow(QWidget):
         self.close()
         self.window = User_Info(self.user)
         self.window.show()
+
+    def import_csvdata(self):
+        self.close()
+        self.window = Import_Window()
+        self.window.show()
+
 
 class User(QWidget):
 
